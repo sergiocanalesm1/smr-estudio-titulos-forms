@@ -11,6 +11,7 @@ interface DocumentUploaderProps {
   multiple: boolean;
   error: boolean;
   buttonLabel: string;
+  helperText?: string;
 }
 
 const DocumentUploader: React.FC<DocumentUploaderProps> = ({
@@ -20,6 +21,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   multiple,
   error,
   buttonLabel,
+  helperText
 }) => {
   const theme = useTheme();
 
@@ -29,7 +31,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
     const newFiles = fileList.map((file, index) => {
       // Only append _{index+1} if multiple is true and more than one file is selected
       const newName =
-        multiple && fileList.length > 1
+        multiple && fileList?.length > 1
           ? `${transformedFileName}_${index + 1}.pdf`
           : `${transformedFileName}.pdf`;
       return new File([file], newName, { type: file.type });
@@ -46,6 +48,11 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
 
   return (
     <Box sx={{ my: 2 }}>
+      {helperText && (
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+          {helperText}
+        </Typography>
+      )}
       <Box
         sx={{
           display: 'flex',
