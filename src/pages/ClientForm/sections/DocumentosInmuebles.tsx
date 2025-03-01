@@ -31,7 +31,7 @@ const handleSectionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
 return (
-    <FormSection
+  <FormSection
     title="Documentos de Inmuebles"
     description=""
     submitBtnText="Validar sección"
@@ -39,8 +39,7 @@ return (
     onSubmit={handleSectionSubmit}
     >
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Escritura 881: Single file upload */}
-        <Controller
+      <Controller
         name="documentosInmuebles.escritura881"
         control={control}
         rules={{ required: true }}
@@ -51,13 +50,12 @@ return (
             transformedFileName="escritura881"
             multiple={false}
             error={!!documentosErrors?.escritura881}
-            buttonLabel="Upload Escritura 881"
+            buttonLabel="Escritura 881"
             helperText="Escritura pública 881 del 26 de abril de 2016 de la Notaría 30 de Bogotá con todos sus anexos."
             />
         )}
-        />
-        {/* Linderos Generales: Multiple file upload */}
-        <Controller
+      />
+      <Controller
         name="documentosInmuebles.linderosGenerales"
         control={control}
         rules={{ required: true }}
@@ -68,7 +66,7 @@ return (
             transformedFileName="linderosGenerales"
             multiple={true}
             error={!!documentosErrors?.linderosGenerales}
-            buttonLabel="Upload Linderos Generales"
+            buttonLabel="Linderos Generales"
             helperText="Primeras 10 hojas, parte pertinente de los linderos generales y especiales de los inmuebles negociados, cuadro de áreas y coeficientes completo y hoja de cierre con firma del Notario de la constitución del reglamento de propiedad horizontal."
             />
         )}
@@ -85,7 +83,7 @@ return (
             transformedFileName="pazYSalvo"
             multiple={true}
             error={!!documentosErrors?.pazYSalvo}
-            buttonLabel="Upload Paz y Salvo"
+            buttonLabel="Paz y Salvo"
             helperText="Paz y salvo del impuesto predial de los inmuebles correspondiente al año 2025."
             />
         )}
@@ -107,7 +105,7 @@ return (
           }}
           render={({ field, fieldState: { error } }) => (
             <TextField
-              label="Valor de la Operación"
+              label="Valor de la Compraventa"
               value={field?.value || ''}
               onChange={(e) => {
                 // Strip commas while typing

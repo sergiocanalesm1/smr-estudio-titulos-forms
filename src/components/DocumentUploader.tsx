@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -24,14 +24,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   helperText
 }) => {
   const theme = useTheme();
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const fileList = Array.from(e.target.files);
-    const newFiles = fileList.map((file, index) => {
-      // Only append _{index+1} if multiple is true and more than one file is selected
+  const processFiles = (fileList: FileList) => {
+    const filesArray = Array.from(fileList);
+    const newFiles = filesArray.map((file, index) => {
       const newName =
-        multiple && fileList?.length > 1
+        multiple && filesArray?.length > 1
           ? `${transformedFileName}_${index + 1}.pdf`
           : `${transformedFileName}.pdf`;
       return new File([file], newName, { type: file.type });
@@ -39,15 +38,42 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
     setFile(newFiles);
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    processFiles(e.target.files);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (!e.dataTransfer.files) return;
+    processFiles(e.dataTransfer.files);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
   const uploadIcon =
-    files.length > 0 ? (
+    files?.length > 0 ? (
       <CheckCircleIcon sx={{ mr: 1 }} />
     ) : (
       <CloudUploadIcon sx={{ mr: 1 }} />
     );
 
   return (
-    <Box sx={{ my: 2 }}>
+    <Box
+      sx={{ my: 2 }}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+    >
       {helperText && (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           {helperText}
@@ -60,10 +86,12 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
           gap: 2,
           flexWrap: 'nowrap',
           width: '100%',
+          border: `2px dashed ${theme.palette.primary.main}`,
+          padding: 2,
         }}
       >
         <Button
-          variant="outlined"
+          variant={files?.length ? "text" : "outlined"}
           component="label"
           sx={{
             textTransform: 'none',
@@ -88,7 +116,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
             accept="application/pdf"
           />
         </Button>
-        {files.length > 0 && (
+        {files?.length > 0 && (
           <Typography
             variant="body2"
             sx={{

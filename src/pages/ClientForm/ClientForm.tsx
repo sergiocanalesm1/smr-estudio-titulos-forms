@@ -1,23 +1,33 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useLocation } from 'react-router-dom';
 import { Container, Button, Box } from '@mui/material';
-import DatosComprador, { DatosCompradorForm } from './sections/DatosComprador';
-import { datosCompradorFormDefaults, documentosInmueblesFormDefaults } from '../../utils/formDefaults';
+import DatosComprador, { DatosCompradorForm, DatosCompradorNatural, DatosCompradorJuridico } from './sections/DatosComprador';
+import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosCompradorJuridicoDefaults, datosCompradorNaturalDefaults } from '../../utils/formDefaults';
 import DocumentosInmuebles, { DocumentosInmueblesForm } from './sections/DocumentosInmuebles';
 
-interface ClientFormState {
-  datosComprador: DatosCompradorForm;
+type ClientFormState = {
+  datosComprador: DatosCompradorForm & (DatosCompradorNatural | DatosCompradorJuridico);
   documentosInmuebles: DocumentosInmueblesForm;
-}
+};
 
 const ClientForm: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const personType = queryParams.get('person_type') ?? 'Natural';
+
+  const defaultValues = {
+    datosComprador: {
+      ...datosCompradorFormDefaults,
+      ...(personType === 'Natural' ? datosCompradorNaturalDefaults : {}),
+      ...(personType === 'Juridico' ? datosCompradorJuridicoDefaults : {}),
+    },
+    documentosInmuebles: documentosInmueblesFormDefaults,
+  };
+
   const methods = useForm<ClientFormState>({
-    defaultValues: {
-        datosComprador: datosCompradorFormDefaults,
-        documentosInmuebles: documentosInmueblesFormDefaults
-      },
-    }
-  );
+    defaultValues,
+  });
 
   const { handleSubmit } = methods;
 
@@ -28,7 +38,7 @@ const ClientForm: React.FC = () => {
   return (
     <Container sx={{ py: 4 }}>
       <FormProvider {...methods}>
-        <DatosComprador />
+        <DatosComprador personType={personType} />
         <DocumentosInmuebles />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
