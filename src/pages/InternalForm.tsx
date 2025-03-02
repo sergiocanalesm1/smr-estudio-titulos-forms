@@ -55,16 +55,15 @@ const InternalForm: React.FC = () => {
       formData.append('documents', file);
     });
 
-    // For now, log all FormData entries to the console
-    try {
-      const response = await fetch('https://smr-internal-form-submission-892018225870.us-central1.run.app', {
-        method: 'POST',
-        body: formData,
-      })
-      console.log(response);
-    } catch (error) {
-      console.error('Error logging FormData:', error);
-    }
+    // try {
+    //   const response = await fetch('https://smr-internal-form-submission-892018225870.us-central1.run.app', {
+    //     method: 'POST',
+    //     body: formData,
+    //   })
+    //   console.log(response);
+    // } catch (error) {
+    //   console.error('Error logging FormData:', error);
+    // }
     setLoading(false);
   };
 

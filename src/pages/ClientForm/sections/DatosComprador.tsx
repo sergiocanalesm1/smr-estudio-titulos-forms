@@ -3,7 +3,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { TextField, Box } from '@mui/material';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
-
+// TODO
+// autofill nombreCliente y email
 export interface DatosCompradorForm extends DatosCompradorNatural, DatosCompradorJuridico {
   nombreCliente: string;//autofill
   email: string; //autofill
@@ -15,18 +16,16 @@ export interface DatosCompradorForm extends DatosCompradorNatural, DatosComprado
   departamento: string;
   codigoPostal: string;
   certificadosTradicion: string;
+  compradorIDs: File[];
+  poder: File[];
 }
 export interface DatosCompradorNatural {
-  compradorIds: File[];
   estadoCivil: string;//dropdown?
-  poderN: File[];//esto es file o string??
 }
 
 export interface DatosCompradorJuridico { 
   certificadoExistencia: File[];
   certificadoComposicion: File[];
-  copiaDocumento: File[];
-  poderJ: File[];
 }
 
 interface DatosCompradorProps {
@@ -53,44 +52,12 @@ const DatosComprador: React.FC<DatosCompradorProps> = ({personType}) => {
 
   const NaturalForm: React.FC = () => {
     return (
-      <>
-        <TextField
-          label="Estado Civil"
-          {...register('datosCompradorNatural.estadoCivil', { required: true })}
-          error={!!datosCompradorErrors?.estadoCivil}
-          variant="outlined"
-        />
-        <Controller
-          name="datosCompradorNatural.compradorIds"
-          control={control}
-          rules={{ required: true }}
-          render={({ field }) => (
-            <DocumentUploader
-              files={field.value}
-              setFile={field.onChange}
-              transformedFileName="compradorIds"
-              multiple={false}
-              error={!!datosCompradorErrors?.compradorIds}
-              buttonLabel="Documento(s) de identidad"
-            />
-          )}
-        />
-        <Controller
-          name="datosCompradorNatural.poderN"
-          control={control}
-          render={({ field }) => (
-            <DocumentUploader
-              files={field.value}
-              setFile={field.onChange}
-              transformedFileName="poderN"
-              multiple={false}
-              error={!!datosCompradorErrors?.poderN}
-              buttonLabel="Poder"
-              helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
-            />
-          )}
-        />
-      </>
+      <TextField
+        label="Estado Civil"
+        {...register('datosCompradorNatural.estadoCivil', { required: true })}
+        error={!!datosCompradorErrors?.estadoCivil}
+        variant="outlined"
+      />
     );
   }
 
@@ -106,7 +73,6 @@ const DatosComprador: React.FC<DatosCompradorProps> = ({personType}) => {
               files={field.value}
               setFile={field.onChange}
               transformedFileName="certificadoExistencia"
-              multiple={false}
               error={!!datosCompradorErrors?.certificadoExistencia}
               buttonLabel="Certificado"
               helperText="Certificado de existencia y representación legal no mayor a 60 días."
@@ -122,40 +88,9 @@ const DatosComprador: React.FC<DatosCompradorProps> = ({personType}) => {
               files={field.value}
               setFile={field.onChange}
               transformedFileName="certificadoComposicion"
-              multiple={false}
               error={!!datosCompradorErrors?.certificadoComposicion}
               buttonLabel="Certificado"
               helperText="Certificado de composición accionaria no mayor a 60 días firmada por el representante legal o revisor fiscal, hasta llegar a la persona natural."
-            />
-          )}
-        />
-        <Controller
-          name="datosCompradorJuridico.copiaDocumento"
-          control={control}
-          rules={{ required: true }}
-          render={({ field }) => (
-            <DocumentUploader
-              files={field.value}
-              setFile={field.onChange}
-              transformedFileName="copiaDocumento"
-              multiple={false}
-              error={!!datosCompradorErrors?.copiaDocumento}
-              buttonLabel="Copia del documento de identidad"
-            />
-          )}
-        />
-        <Controller
-          name="datosCompradorJuridico.poderJ"
-          control={control}
-          render={({ field }) => (
-            <DocumentUploader
-              files={field.value}
-              setFile={field.onChange}
-              transformedFileName="poderJ"
-              multiple={false}
-              error={!!datosCompradorErrors?.poderJ}
-              buttonLabel="Poder"
-              helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
             />
           )}
         />
@@ -179,25 +114,43 @@ const DatosComprador: React.FC<DatosCompradorProps> = ({personType}) => {
           variant="outlined"
         />
         <TextField
-          label="Identificación"
-          {...register('datosComprador.identificacion', { required: true })}
-          error={!!datosCompradorErrors?.identificacion}
-          variant="outlined"
-        />
-        <TextField
-          label="Dirección"
-          {...register('datosComprador.direccion', { required: true })}
-          error={!!datosCompradorErrors?.direccion}
-          helperText="En caso de estar fuera del país agradecemos poner una dirección de Colombia"
-          variant="outlined"
-        />
-        <TextField
           label="E-mail"
           {...register('datosComprador.email', {
             required: true,
             pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
           })}
           error={!!datosCompradorErrors?.email}
+          variant="outlined"
+        />
+        <TextField
+          label="Identificación"
+          {...register('datosComprador.identificacion', { required: true })}
+          error={!!datosCompradorErrors?.identificacion}
+          variant="outlined"
+        />
+        <Controller
+          name="datosCompradorNatural.compradorIds"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <DocumentUploader
+              files={field.value}
+              setFile={field.onChange}
+              transformedFileName="compradorIds"
+              error={!!datosCompradorErrors?.compradorIDs}
+              buttonLabel="Documento de Identidad"
+              helperText={personType === 'Natural' 
+                ? 'Copia del documento de identidad del o los titulares del crédito'
+                : 'Documento de identidad del representante legal'
+              }
+            />
+          )}
+        />
+        <TextField
+          label="Dirección"
+          {...register('datosComprador.direccion', { required: true })}
+          error={!!datosCompradorErrors?.direccion}
+          helperText="En caso de estar fuera del país agradecemos poner una dirección de Colombia"
           variant="outlined"
         />
         <TextField
@@ -236,7 +189,23 @@ const DatosComprador: React.FC<DatosCompradorProps> = ({personType}) => {
           error={!!datosCompradorErrors?.certificadosTradicion}
           variant="outlined"
         />
+
         {personType === 'Natural' ? <NaturalForm /> : personType === 'Juridico' ? <JuridicoForm /> : null}
+
+        <Controller
+          name="datosCompradorNatural.poder"
+          control={control}
+          render={({ field }) => (
+            <DocumentUploader
+              files={field.value}
+              setFile={field.onChange}
+              transformedFileName="poder"
+              error={!!datosCompradorErrors?.poder}
+              buttonLabel="Poder"
+              helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
+            />
+          )}
+        />
       </Box>
     </FormSection>
   );

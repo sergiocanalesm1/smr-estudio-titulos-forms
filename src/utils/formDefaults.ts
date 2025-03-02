@@ -12,19 +12,17 @@ export const datosCompradorFormDefaults: Partial<DatosCompradorForm> = {
   departamento: '',
   codigoPostal: '',
   certificadosTradicion: '',
+  compradorIDs: [],
+  poder: []
 };
 
 export const datosCompradorJuridicoDefaults = {
   certificadoExistencia: [],
   certificadoComposicion: [],
-  copiaDocumento: [],
-  poderJ: [],
 };
 
 export const datosCompradorNaturalDefaults = {
-  compradorIds: [],
   estadoCivil: '',
-  poderN: [],
 };
 
 export const documentosInmueblesFormDefaults: DocumentosInmueblesForm = {
