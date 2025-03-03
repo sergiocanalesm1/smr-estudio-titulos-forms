@@ -1,7 +1,13 @@
-import { DatosCompradorForm } from "../pages/ClientForm/sections/DatosComprador";
+import { DatosCompradorForm, DatosVendedorForm } from "../pages/ClientForm/sections/DatosAgente";
 import { DocumentosInmueblesForm } from "../pages/ClientForm/sections/DocumentosInmuebles";
 
+const datosDefaults = {
+  ids: [],
+  poder: []
+}
+
 export const datosCompradorFormDefaults: Partial<DatosCompradorForm> = {
+  ...datosDefaults,
   nombreCliente: '',
   identificacion: '',
   direccion: '',
@@ -12,16 +18,18 @@ export const datosCompradorFormDefaults: Partial<DatosCompradorForm> = {
   departamento: '',
   codigoPostal: '',
   certificadosTradicion: '',
-  compradorIDs: [],
-  poder: []
 };
 
-export const datosCompradorJuridicoDefaults = {
+export const datosVendedorFormDefaults: Partial<DatosVendedorForm> = {
+  ...datosDefaults
+}
+
+export const datosJuridicoDefaults = {
   certificadoExistencia: [],
   certificadoComposicion: [],
 };
 
-export const datosCompradorNaturalDefaults = {
+export const datosNaturalDefaults = {
   estadoCivil: '',
 };
 
