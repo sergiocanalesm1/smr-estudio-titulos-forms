@@ -1,5 +1,4 @@
-import { DatosCompradorForm, DatosVendedorForm } from "../pages/ClientForm/sections/DatosAgente";
-import { DocumentosInmueblesForm } from "../pages/ClientForm/sections/DocumentosInmuebles";
+import type { DatosCompradorForm, DatosVendedorForm, InmueblesForm } from "../types";
 
 const datosDefaults = {
   ids: [],
@@ -33,7 +32,7 @@ export const datosNaturalDefaults = {
   estadoCivil: '',
 };
 
-export const documentosInmueblesFormDefaults: DocumentosInmueblesForm = {
+export const documentosInmueblesFormDefaults: InmueblesForm = {
   escritura881: [],
   linderosGenerales: [],
   pazYSalvo: [],

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Paper, Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Paper, Box, Typography, Button, CircularProgress, Collapse, IconButton } from '@mui/material';
+import { ExpandMore, CheckCircleOutline } from '@mui/icons-material';
 
 interface FormSectionProps {
   title: string;
@@ -8,6 +9,7 @@ interface FormSectionProps {
   submitBtnText: string;
   loading: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  done?: boolean;
 }
 
 const FormSection: React.FC<FormSectionProps> = ({
@@ -17,7 +19,10 @@ const FormSection: React.FC<FormSectionProps> = ({
   submitBtnText,
   loading,
   onSubmit,
+  done = false
 }) => {
+  const [expanded, setExpanded] = React.useState(!done);
+
   return (
     <Paper
       component="form"
@@ -26,28 +31,40 @@ const FormSection: React.FC<FormSectionProps> = ({
       sx={{
         p: 4,
         borderRadius: 2,
-        backgroundColor: '#fff',
         maxWidth: 600,
         margin: '0 auto',
-        my: 4,
+        mb: 4,
       }}
     >
-      <Typography variant="h5" component="h2" gutterBottom>
-        {title}
-      </Typography>
-      {description && (
-        <Typography variant="body2" color="textSecondary" gutterBottom>
-          {description}
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h5" component="h2" gutterBottom>
+          {title}
         </Typography>
-      )}
-      <Box sx={{ my: 3 }}>
-        {children}
+        {done && (
+          <IconButton onClick={() => setExpanded(!expanded)}>
+            {expanded ? <ExpandMore /> : <CheckCircleOutline color="success" />}
+          </IconButton>
+        )}
       </Box>
-      <Box sx={{ textAlign: 'right' }}>
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
-          {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
-        </Button>
-      </Box>
+      <Collapse in={expanded}>
+        {description && (
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            {description}
+          </Typography>
+        )}
+        <Box sx={{ my: 3 }}>
+          {children}
+        </Box>
+        <Box sx={{ textAlign: 'right' }}>
+          {done ? (
+            <CheckCircleOutline color="success" />
+          ) : (
+            <Button type="submit" variant="contained" color="primary" disabled={loading}>
+              {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
+            </Button>
+          )}
+        </Box>
+      </Collapse>
     </Paper>
   );
 };
