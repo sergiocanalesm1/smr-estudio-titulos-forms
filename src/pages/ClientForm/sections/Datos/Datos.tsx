@@ -22,19 +22,11 @@ const Datos: React.FC<DatosProps> = ({ validated, setValidated, personType, part
   const {
     control,
     trigger,
-    watch,
-    formState: { errors },
+    formState,
   } = useFormContext();
 
-  const e = errors[`datos${partyType}`] as any;
 
-  // Callback version of watch.  It's your responsibility to unsubscribe when done.
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) =>
-      console.log(`watching ${name} of type ${type} with value:`, value)
-    )
-    return () => subscription.unsubscribe()
-  }, [watch])
+  const e = formState.errors[`datos${partyType}`] as any;
 
   const handleSectionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

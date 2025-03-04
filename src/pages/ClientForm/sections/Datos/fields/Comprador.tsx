@@ -6,12 +6,13 @@ export const CompradorFields: React.FC = () => {
         register,
         formState: { errors },
     } = useFormContext();
+    const e = errors.datosComprador as any;
     return (
         <>
             <TextField
                 label="Nombre del cliente"
                 {...register('datosComprador.nombreCliente', { required: true })}
-                error={!!errors?.nombreCliente}
+                error={!!e?.nombreCliente}
                 variant="outlined"
             />
             <TextField
@@ -20,19 +21,19 @@ export const CompradorFields: React.FC = () => {
                     required: true,
                     pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
                 })}
-                error={!!errors?.email}
+                error={!!e?.email}
                 variant="outlined"
             />
             <TextField
                 label="Identificación"
                 {...register('datosComprador.identificacion', { required: true })}
-                error={!!errors?.identificacion}
+                error={!!e?.identificacion}
                 variant="outlined"
             />
             <TextField
                 label="Dirección"
                 {...register('datosComprador.direccion', { required: true })}
-                error={!!errors?.direccion}
+                error={!!e?.direccion}
                 helperText="En caso de estar fuera del país agradecemos poner una dirección de Colombia"
                 variant="outlined"
             />
@@ -42,26 +43,26 @@ export const CompradorFields: React.FC = () => {
                     required: true,
                     pattern: { value: /^[+\d]+$/, message: 'Debe ser un número válido' },
                 })}
-                error={!!errors?.tel}
+                error={!!e?.tel}
                 helperText={!!errors?.tel ? 'Debe ser un número válido' : ''}
                 variant="outlined"
             />
             <TextField
                 label="Barrio"
                 {...register('datosComprador.barrio', { required: true })}
-                error={!!errors?.barrio}
+                error={!!e?.barrio}
                 variant="outlined"
             />
             <TextField
                 label="Localidad"
                 {...register('datosComprador.localidad', { required: true })}
-                error={!!errors?.localidad}
+                error={!!e?.localidad}
                 variant="outlined"
             />
             <TextField
                 label="Departamento"
                 {...register('datosComprador.departamento', { required: true })}
-                error={!!errors?.departamento}
+                error={!!e?.departamento}
                 variant="outlined"
             />
             <TextField
@@ -70,14 +71,14 @@ export const CompradorFields: React.FC = () => {
                     required: true,
                     pattern: { value: /^[+\d]+$/, message: 'Debe ser un número válido' },
                 })}
-                error={!!errors?.codigoPostal}
-                helperText={!!errors?.codigoPostal ? 'Debe ser un número válido' : ''}
+                error={!!e?.codigoPostal}
+                helperText={!!e?.codigoPostal ? 'Debe ser un número válido' : ''}
                 variant="outlined"
             />
             <TextField
                 label="Número de los certificados de tradición"
                 {...register('datosComprador.certificadosTradicion', { required: true })}
-                error={!!errors?.certificadosTradicion}
+                error={!!e?.certificadosTradicion}
                 variant="outlined"
             />
         </>

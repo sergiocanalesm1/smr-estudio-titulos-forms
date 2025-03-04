@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Paper, Box, Typography, Button, CircularProgress, Collapse, IconButton } from '@mui/material';
 import { ExpandMore, CheckCircleOutline } from '@mui/icons-material';
 
@@ -22,6 +22,12 @@ const FormSection: React.FC<FormSectionProps> = ({
   done = false
 }) => {
   const [expanded, setExpanded] = React.useState(!done);
+
+  useEffect(() => {
+    if (done) {
+      setExpanded(false);
+    }
+  }, [done]);
 
   return (
     <Paper
