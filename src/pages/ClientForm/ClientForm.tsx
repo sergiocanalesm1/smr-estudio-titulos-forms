@@ -5,8 +5,9 @@ import { Container, Button, Box } from '@mui/material';
 import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosJuridicoDefaults, datosNaturalDefaults, datosVendedorFormDefaults } from '../../utils/formDefaults';
 import { Paper, Typography } from '@mui/material';
 import { DatosCompradorForm, DatosNatural, DatosJuridico, DatosVendedorForm, PersonType, InmueblesForm } from '../../types';
-import Datos from './sections/Datos/Datos';
 import Inmuebles from './sections/Inmuebles';
+import Comprador from './sections/Comprador';
+import Vendedor from './sections/Vendedor';
 
 type ClientFormState = {
   datosComprador: DatosCompradorForm & (DatosNatural | DatosJuridico);
@@ -74,9 +75,9 @@ const ClientForm: React.FC = () => {
             hipotecario, nos permitimos solicitarle la siguiente documentación:
           </Typography>
         </Paper>
-        <Datos personType={compradorType} partyType='Comprador' validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
+        <Comprador personType={compradorType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
         <Inmuebles validated={validatedSections.inmuebles} setValidated={(v) => setValidated('inmuebles', v)} />
-        <Datos personType={vendedorType} partyType='Vendedor' partyCallback={setVendedorType} validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
+        <Vendedor personType={vendedorType} setPersonType={setVendedorType} validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
             Submit

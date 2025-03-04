@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Paper, Box, Typography, Button, CircularProgress, Collapse, IconButton } from '@mui/material';
-import { ExpandMore, CheckCircleOutline } from '@mui/icons-material';
+import { Paper, Box, Typography, Button, CircularProgress, Collapse } from '@mui/material';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 interface FormSectionProps {
   title: string;
@@ -10,6 +10,7 @@ interface FormSectionProps {
   loading: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   done?: boolean;
+  setDone?: (value: boolean) => void;
 }
 
 const FormSection: React.FC<FormSectionProps> = ({
@@ -19,7 +20,8 @@ const FormSection: React.FC<FormSectionProps> = ({
   submitBtnText,
   loading,
   onSubmit,
-  done = false
+  done = false,
+  setDone = () => { },
 }) => {
   const [expanded, setExpanded] = React.useState(!done);
 
@@ -28,6 +30,11 @@ const FormSection: React.FC<FormSectionProps> = ({
       setExpanded(false);
     }
   }, [done]);
+
+  const handleModify = () => {
+    setDone(false);
+    setExpanded(true);
+  };
 
   return (
     <Paper
@@ -47,9 +54,12 @@ const FormSection: React.FC<FormSectionProps> = ({
           {title}
         </Typography>
         {done && (
-          <IconButton onClick={() => setExpanded(!expanded)}>
-            {expanded ? <ExpandMore /> : <CheckCircleOutline color="success" />}
-          </IconButton>
+          <Box display="flex" alignItems="center">
+            <Button variant="outlined" onClick={handleModify} sx={{ mr: 1 }}>
+              Modificar
+            </Button>
+            <CheckCircleOutline color="success" />
+          </Box>
         )}
       </Box>
       <Collapse in={expanded}>
@@ -62,13 +72,9 @@ const FormSection: React.FC<FormSectionProps> = ({
           {children}
         </Box>
         <Box sx={{ textAlign: 'right' }}>
-          {done ? (
-            <CheckCircleOutline color="success" />
-          ) : (
-            <Button type="submit" variant="contained" color="primary" disabled={loading}>
-              {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
-            </Button>
-          )}
+          <Button type="submit" variant="contained" color="primary" disabled={loading}>
+            {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
+          </Button>
         </Box>
       </Collapse>
     </Paper>

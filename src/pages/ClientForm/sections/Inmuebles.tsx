@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { TextField, Box } from '@mui/material';
 import FormSection from '../../../components/FormSection';
@@ -16,21 +16,10 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
   const {
     control,
     trigger,
-    // watch,
     formState: { errors },
   } = useFormContext();
 
   const documentosErrors = errors?.documentosInmuebles as Partial<InmueblesForm> | undefined;
-
-  // // Watch all fields in the form
-  // const watchedFields = watch();
-
-  // // Set validated to false whenever any field changes
-  // useEffect(() => {
-  //   if (validated) {
-  //     setValidated(false);
-  //   }
-  // }, [watchedFields]);
 
   const handleSectionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,6 +38,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
       loading={false}
       onSubmit={handleSectionSubmit}
       done={validated}
+      setDone={setValidated}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Controller
