@@ -13,25 +13,21 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
     // set value from react hook state
     const { setValue } = useFormContext();
 
-    const [selectedNotaria, setSelectedNotaria] = useState<string>('');
+    const [selectedNotaria, setSelectedNotaria] = useState<string>('Notaria 38');
 
     const [nombreFuncionario, setNombreFuncionario] = useState<string>('');
     const [correoElectronico, setCorreoElectronico] = useState<string>('');
     const [telefono, setTelefono] = useState<string>('');
 
-    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedNotaria(event.target.value);
-    };
-
-    const handleSectionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSectionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(`notaria section is valid!`);
-        setValidated(true);
         let value = selectedNotaria;
         if (selectedNotaria === 'Otra') {
             value = `Otra Notaría: ${nombreFuncionario} - ${correoElectronico} - ${telefono}`;
         }
         setValue('notaria', value);
+        setValidated(true);
     };
 
     return (
@@ -44,11 +40,13 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
             done={validated}
             setDone={setValidated}
         >
-
-            <RadioGroup value={selectedNotaria} onChange={handleRadioChange}>
-                <FormControlLabel value="Notaria 38" control={<Radio />} label="Notaria 38 ubicada en la Cra. 7 No. 33 -13 (Firma domicilio)." />
-                <FormControlLabel value="Notaria 57" control={<Radio />} label="Notaria 57 ubicada en la Calle 45a Sur No. 50 - 47." />
-                <FormControlLabel value="Notaria 41" control={<Radio />} label="Notaria 41 Ubicada en la Calle 85 No. 12." />
+            <RadioGroup
+                value={selectedNotaria}
+                defaultChecked
+                onChange={(e) => setSelectedNotaria(e.target.value)}>
+                <FormControlLabel value="Notaria 38" control={<Radio />} label="Notaría 38 ubicada en la Cra. 7 No. 33 -13 (Firma domicilio)." />
+                <FormControlLabel value="Notaria 57" control={<Radio />} label="Notaría 57 ubicada en la Calle 45a Sur No. 50 - 47." />
+                <FormControlLabel value="Notaria 41" control={<Radio />} label="Notaría 41 Ubicada en la Calle 85 No. 12." />
                 <FormControlLabel value="Otra" control={<Radio />} label="Otra" />
             </RadioGroup>
 

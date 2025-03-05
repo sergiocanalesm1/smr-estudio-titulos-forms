@@ -3,6 +3,11 @@ export type InmueblesForm = {
     linderosGenerales: File[];
     pazYSalvo: File[];
     valorOperacion: string;
+    bbva: {
+        hipoteca: File[];
+        manifestacionPago: string;
+        manifestacionCliente: string;
+    }
 }
 
 export type DatosCompradorForm = Datos & (DatosNatural | DatosJuridico) & {
