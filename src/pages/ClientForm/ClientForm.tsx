@@ -8,11 +8,13 @@ import { DatosCompradorForm, DatosNatural, DatosJuridico, DatosVendedorForm, Per
 import Inmuebles from './sections/Inmuebles';
 import Comprador from './sections/Comprador';
 import Vendedor from './sections/Vendedor';
+import Notaria from './sections/Notaria';
 
 type ClientFormState = {
   datosComprador: DatosCompradorForm & (DatosNatural | DatosJuridico);
   datosVendedor: DatosVendedorForm & (DatosNatural | DatosJuridico);
   inmuebles: InmueblesForm;
+  notaria: string;
 };
 
 const ClientForm: React.FC = () => {
@@ -25,6 +27,7 @@ const ClientForm: React.FC = () => {
     datosComprador: false,
     datosVendedor: false,
     inmuebles: false,
+    notaria: false,
   });
 
   const defaultValues = {
@@ -39,6 +42,7 @@ const ClientForm: React.FC = () => {
       ...(vendedorType === 'Juridico' ? datosJuridicoDefaults : {}),
     },
     documentosInmuebles: documentosInmueblesFormDefaults,
+    notaria: 'Notaria 38',
   };
 
   const methods = useForm<ClientFormState>({
@@ -78,6 +82,7 @@ const ClientForm: React.FC = () => {
         <Comprador personType={compradorType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
         <Inmuebles validated={validatedSections.inmuebles} setValidated={(v) => setValidated('inmuebles', v)} />
         <Vendedor personType={vendedorType} setPersonType={setVendedorType} validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
+        <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
             Submit
