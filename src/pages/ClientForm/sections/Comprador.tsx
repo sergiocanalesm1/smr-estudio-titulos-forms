@@ -4,6 +4,7 @@ import { Box, TextField } from '@mui/material';
 import { DatosCompradorForm, DatosJuridico, DatosNatural, PersonType } from '../../../types';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
+import { sectionNames } from '../../../utils/constants';
 // TODO
 // autofill nombreCliente y email
 
@@ -79,8 +80,8 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
 
     return (
         <FormSection
-            title="Datos Comprador"
-            submitBtnText="Validar sección"
+            title={sectionNames.datosComprador}
+            submitBtnText="Completar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}

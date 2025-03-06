@@ -6,8 +6,8 @@ interface FormSectionProps {
   title: string;
   description?: string;
   children: React.ReactNode;
-  submitBtnText: string;
-  loading: boolean;
+  submitBtnText?: string;
+  loading?: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   done?: boolean;
   setDone?: (value: boolean) => void;
@@ -17,7 +17,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   title,
   description,
   children,
-  submitBtnText,
+  submitBtnText = "Completar Sección",
   loading,
   onSubmit,
   done = false,

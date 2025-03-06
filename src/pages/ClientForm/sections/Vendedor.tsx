@@ -4,6 +4,7 @@ import { Box, RadioGroup, FormControlLabel, Radio, TextField } from '@mui/materi
 import { PersonType } from '../../../types';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
+import { sectionNames } from '../../../utils/constants';
 
 interface VendedorProps {
     validated: boolean;
@@ -88,8 +89,8 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated, personType
 
     return (
         <FormSection
-            title="Datos Vendedor"
-            submitBtnText="Validar sección"
+            title={sectionNames.datosVendedor}
+            submitBtnText="Completar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}

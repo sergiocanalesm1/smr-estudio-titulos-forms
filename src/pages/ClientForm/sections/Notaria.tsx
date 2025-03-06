@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, TextField, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import FormSection from '../../../components/FormSection';
 import { useFormContext } from 'react-hook-form';
+import { sectionNames } from '../../../utils/constants';
 
 interface NotariaProps {
     validated: boolean;
@@ -10,7 +11,6 @@ interface NotariaProps {
 
 const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
 
-    // set value from react hook state
     const { setValue } = useFormContext();
 
     const [selectedNotaria, setSelectedNotaria] = useState<string>('Notaria 38');
@@ -21,20 +21,40 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
 
     const handleSectionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(`notaria section is valid!`);
+        if (selectedNotaria === 'Otra') {
+            const fields = ['nombreFuncionario', 'correoElectronico', 'telefono'];
+            const notValid = fields.some(field => validateField(field));
+            if (notValid) {
+                return;
+            }
+        }
         let value = selectedNotaria;
         if (selectedNotaria === 'Otra') {
             value = `Otra Notaría: ${nombreFuncionario} - ${correoElectronico} - ${telefono}`;
         }
+        console.log(`notaria section is valid!`);
         setValue('notaria', value);
         setValidated(true);
     };
 
+    const validateField = (field: string) => {
+        switch (field) {
+            case 'nombreFuncionario':
+                return !nombreFuncionario;
+            case 'correoElectronico':
+                return (!correoElectronico || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(correoElectronico));
+            case 'telefono':
+                return (!telefono || !/^\+?[0-9]+$/.test(telefono));
+            default:
+                return false;
+        }
+    }
+
     return (
         <FormSection
-            title="Notaria"
+            title={sectionNames.notaria}
             description="Estas son las Notarías con las que tenemos convenio, pero si desea puede escoger alguna diferente."
-            submitBtnText="Validar sección"
+            submitBtnText="Completar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}
@@ -59,6 +79,8 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
                         margin="normal"
                         value={nombreFuncionario}
                         onChange={(e) => setNombreFuncionario(e.target.value)}
+                        required
+                        error={selectedNotaria === 'Otra' && validateField('nombreFuncionario')}
                     />
                     <TextField
                         fullWidth
@@ -68,6 +90,9 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
                         type="email"
                         value={correoElectronico}
                         onChange={(e) => setCorreoElectronico(e.target.value)}
+                        required
+                        error={selectedNotaria === 'Otra' && validateField('correoElectronico')}
+                        helperText={selectedNotaria === 'Otra' && validateField('correoElectronico') ? 'Correo electrónico no válido' : ''}
                     />
                     <TextField
                         fullWidth
@@ -77,6 +102,9 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
                         type="tel"
                         value={telefono}
                         onChange={(e) => setTelefono(e.target.value)}
+                        required
+                        error={selectedNotaria === 'Otra' && validateField('telefono')}
+                        helperText={selectedNotaria === 'Otra' && validateField('telefono') ? 'Teléfono no válido' : ''}
                     />
                 </Box>
             )}

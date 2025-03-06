@@ -6,6 +6,7 @@ import { TextField, Box, RadioGroup, FormControlLabel, Radio, Typography } from 
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
 import { InmueblesForm } from '../../../types';
+import { sectionNames } from '../../../utils/constants';
 
 interface InmueblesProps {
   validated: boolean;
@@ -89,9 +90,9 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
 
   return (
     <FormSection
-      title="Documentos de Inmuebles"
+      title={sectionNames.inmuebles}
       description=""
-      submitBtnText="Validar sección"
+      submitBtnText="Completar Sección"
       loading={false}
       onSubmit={handleSectionSubmit}
       done={validated}
@@ -156,7 +157,6 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
               const num = Number(rawValue);
               if (isNaN(num)) return 'No válido';
               if (num <= 0) return 'Debe ser positivo';
-              console.log('Valid number:', num);
               return true;
             },
           }}

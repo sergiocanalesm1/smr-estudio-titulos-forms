@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
-import { Container, Button, Box } from '@mui/material';
+import { Container, Button, Box, Paper, Typography } from '@mui/material';
 import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosJuridicoDefaults, datosNaturalDefaults, datosVendedorFormDefaults } from '../../utils/formDefaults';
-import { Paper, Typography } from '@mui/material';
-import { DatosCompradorForm, DatosNatural, DatosJuridico, DatosVendedorForm, PersonType, InmueblesForm } from '../../types';
+import { ClientFormState, PersonType } from '../../types';
 import Inmuebles from './sections/Inmuebles';
 import Comprador from './sections/Comprador';
 import Vendedor from './sections/Vendedor';
 import Notaria from './sections/Notaria';
+import Pago from './sections/Pago';
+import Stepper from '../../components/Stepper';
 
-type ClientFormState = {
-  datosComprador: DatosCompradorForm & (DatosNatural | DatosJuridico);
-  datosVendedor: DatosVendedorForm & (DatosNatural | DatosJuridico);
-  inmuebles: InmueblesForm;
-  notaria: string;
-};
 
 const ClientForm: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const compradorType: PersonType = (queryParams.get('person_type') as PersonType) ?? 'Natural'; // assert
+  const paymentValue = queryParams.get('payment_value') ?? '0'; // change
 
   const [vendedorType, setVendedorType] = useState<PersonType | undefined>();
   const [validatedSections, setValidatedSections] = useState<Record<keyof ClientFormState, boolean>>({
@@ -28,6 +24,7 @@ const ClientForm: React.FC = () => {
     datosVendedor: false,
     inmuebles: false,
     notaria: false,
+    soportePago: false,
   });
 
   const defaultValues = {
@@ -43,6 +40,7 @@ const ClientForm: React.FC = () => {
     },
     documentosInmuebles: documentosInmueblesFormDefaults,
     notaria: 'Notaria 38',
+    soportePago: [],
   };
 
   const methods = useForm<ClientFormState>({
@@ -62,6 +60,7 @@ const ClientForm: React.FC = () => {
 
   return (
     <Container sx={{ py: 2 }}>
+      <Stepper validatedSections={validatedSections} onSubmit={handleSubmit(onSubmit)} />
       <FormProvider {...methods}>
         <Paper elevation={1} sx={{
           p: 4,
@@ -83,9 +82,10 @@ const ClientForm: React.FC = () => {
         <Inmuebles validated={validatedSections.inmuebles} setValidated={(v) => setValidated('inmuebles', v)} />
         <Vendedor personType={vendedorType} setPersonType={setVendedorType} validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
         <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
+        <Pago paymentValue={paymentValue} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
-            Submit
+            Enviar Formulario
           </Button>
         </Box>
       </FormProvider>

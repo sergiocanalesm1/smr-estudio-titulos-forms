@@ -1,3 +1,11 @@
+export type ClientFormState = {
+    datosComprador: DatosCompradorForm & (DatosNatural | DatosJuridico);
+    datosVendedor: DatosVendedorForm & (DatosNatural | DatosJuridico);
+    inmuebles: InmueblesForm;
+    notaria: string;
+    soportePago: File[];
+};
+
 export type InmueblesForm = {
     escritura881: File[];
     linderosGenerales: File[];
