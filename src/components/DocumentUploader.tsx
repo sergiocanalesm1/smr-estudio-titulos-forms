@@ -11,7 +11,7 @@ interface DocumentUploaderProps {
   error: boolean;
   buttonLabel: string;
   multiple?: boolean;
-  helperText?: string;
+  helperText: string;
 }
 
 const DocumentUploader: React.FC<DocumentUploaderProps> = ({
@@ -74,11 +74,11 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      {helperText && (
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-          {helperText}
-        </Typography>
-      )}
+
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+        {helperText} (PDF)
+      </Typography>
+
       <Box
         sx={{
           display: 'flex',
@@ -87,15 +87,16 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
           flexWrap: 'nowrap',
           width: '100%',
           border: `2px dashed ${theme.palette.primary.main}`,
-          padding: 2,
+          px: 2,
+          py: 4,
         }}
       >
         {isDragging
-        ? <>
+          ? <>
             <CloudUploadIcon sx={{ mr: 1 }} />
             <Typography variant="body2" color="textSecondary">Suelta los archivos aquí</Typography>
           </>
-        : <>
+          : <>
             <Button
               variant={files?.length ? "text" : "outlined"}
               component="label"

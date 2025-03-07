@@ -12,11 +12,8 @@ export const datosCompradorFormDefaults: Partial<DatosCompradorForm> = {
   direccion: '',
   email: '',
   tel: '',
-  barrio: '',
-  localidad: '',
+  ciudad: '',
   departamento: '',
-  codigoPostal: '',
-  certificadosTradicion: '',
 };
 
 export const datosVendedorFormDefaults: Partial<DatosVendedorForm> = {
@@ -34,7 +31,7 @@ export const datosNaturalDefaults = {
 
 export const documentosInmueblesFormDefaults: InmueblesForm = {
   escritura881: [],
-  linderosGenerales: [],
+  linderos: [],
   pazYSalvo: [],
   valorOperacion: '',
 };

@@ -8,10 +8,10 @@ export type ClientFormState = {
 
 export type InmueblesForm = {
     escritura881: File[];
-    linderosGenerales: File[];
+    linderos: File[];
     pazYSalvo: File[];
     valorOperacion: string;
-    bbva: {
+    bbva?: {
         hipoteca: File[];
         manifestacionPago: string;
         manifestacionCliente: string;
@@ -24,11 +24,8 @@ export type DatosCompradorForm = Datos & (DatosNatural | DatosJuridico) & {
     identificacion: string;
     direccion: string;
     tel: string;
-    barrio: string;
-    localidad: string;
+    ciudad: string,
     departamento: string;
-    codigoPostal: string;
-    certificadosTradicion: string;
 }
 
 export type DatosVendedorForm = Datos & (DatosNatural | DatosJuridico)

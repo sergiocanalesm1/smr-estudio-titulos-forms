@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircleOutline } from '@mui/icons-material';
+import { CheckCircleOutline, CircleOutlined } from '@mui/icons-material';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { sectionNames } from '../utils/constants';
 import { ClientFormState } from '../types';
@@ -18,7 +18,10 @@ const Stepper: React.FC<StepperProps> = ({ validatedSections, onSubmit }) => {
                 {Object.entries(sectionNames).map(([section, name]) => (
                     <Box key={section} sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
                         <Typography variant='body2'>{name}</Typography>
-                        {validatedSections[section as keyof ClientFormState] && <CheckCircleOutline color="success" />}
+                        {validatedSections[section as keyof ClientFormState]
+                            ? <CheckCircleOutline color="success" fontSize="small" />
+                            : <CircleOutlined color="success" fontSize="small" />
+                        }
                     </Box>
                 ))}
 

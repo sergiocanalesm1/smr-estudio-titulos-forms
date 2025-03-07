@@ -1,7 +1,6 @@
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Box, RadioGroup, FormControlLabel, Radio, TextField } from '@mui/material';
-import { PersonType } from '../../../types';
+import { Box, RadioGroup, FormControlLabel, Radio, TextField, Typography } from '@mui/material';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
 import { sectionNames } from '../../../utils/constants';
@@ -9,20 +8,20 @@ import { sectionNames } from '../../../utils/constants';
 interface VendedorProps {
     validated: boolean;
     setValidated: (value: boolean) => void;
-    personType?: PersonType;
-    setPersonType: (type: PersonType) => void;
 }
 
-const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated, personType, setPersonType }) => {
+const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
     const {
         control,
         register,
         trigger,
         formState,
+        watch,
     } = useFormContext();
-
+    const [withPoder, setWithPoder] = React.useState<boolean>(false);
 
     const e = formState.errors.datosVendedor as any;
+    const personType = watch('datosVendedor.tipo');
 
     const handleSectionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,12 +33,31 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated, personType
     };
 
     const ChoosePersonType: React.FC = () => (
-        <Box sx={{ p: 1 }}>
-            <RadioGroup row value={personType} onChange={(e) => setPersonType(e.target.value as PersonType)}>
-                <FormControlLabel value="Natural" control={<Radio />} label="Natural" />
-                <FormControlLabel value="Juridico" control={<Radio />} label="Jurídico" />
+        <Controller
+            name="datosVendedor.tipo"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+                <RadioGroup row value={field.value} onChange={(e) => { field.onChange(e) }}>
+                    <FormControlLabel value="Natural" control={<Radio />} label="Natural" />
+                    <FormControlLabel value="Juridico" control={<Radio />} label="Jurídico" />
+                </RadioGroup>
+            )}
+        />
+    )
+
+    const PoderOptional: React.FC = () => (
+        <>
+            <Typography>¿Alguna de las partes actúa mediante apoderado?</Typography>
+            <RadioGroup
+                row
+                value={withPoder}
+                defaultChecked
+                onChange={(e) => setWithPoder(e.target.value === 'true')}>
+                <FormControlLabel value={true} control={<Radio />} label="Sí" />
+                <FormControlLabel value={false} control={<Radio />} label="No" />
             </RadioGroup>
-        </Box>
+        </>
     )
 
     const NaturalFields: React.FC = () => (
@@ -90,7 +108,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated, personType
     return (
         <FormSection
             title={sectionNames.datosVendedor}
-            submitBtnText="Completar Sección"
+            submitBtnText="Validar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}
@@ -118,20 +136,23 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated, personType
                             />
                         )}
                     />
-                    <Controller
-                        name="datosVendedor.poder"
-                        control={control}
-                        render={({ field }) => (
-                            <DocumentUploader
-                                files={field.value}
-                                setFile={field.onChange}
-                                transformedFileName="poder"
-                                error={!!e?.poder}
-                                buttonLabel="Poder"
-                                helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
-                            />
-                        )}
-                    />
+                    <PoderOptional />
+                    {withPoder &&
+                        <Controller
+                            name="datosVendedor.poder"
+                            control={control}
+                            render={({ field }) => (
+                                <DocumentUploader
+                                    files={field.value}
+                                    setFile={field.onChange}
+                                    transformedFileName="poder"
+                                    error={!!e?.poder}
+                                    buttonLabel="Poder"
+                                    helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
+                                />
+                            )}
+                        />
+                    }
                 </Box>
             }
         </FormSection>

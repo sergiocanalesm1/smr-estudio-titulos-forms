@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { Container, Button, Box, Paper, Typography } from '@mui/material';
-import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosJuridicoDefaults, datosNaturalDefaults, datosVendedorFormDefaults } from '../../utils/formDefaults';
+import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosVendedorFormDefaults } from '../../utils/formDefaults';
 import { ClientFormState, PersonType } from '../../types';
 import Inmuebles from './sections/Inmuebles';
 import Comprador from './sections/Comprador';
@@ -18,7 +18,6 @@ const ClientForm: React.FC = () => {
   const compradorType: PersonType = (queryParams.get('person_type') as PersonType) ?? 'Natural'; // assert
   const paymentValue = queryParams.get('payment_value') ?? '0'; // change
 
-  const [vendedorType, setVendedorType] = useState<PersonType | undefined>();
   const [validatedSections, setValidatedSections] = useState<Record<keyof ClientFormState, boolean>>({
     datosComprador: false,
     datosVendedor: false,
@@ -28,26 +27,14 @@ const ClientForm: React.FC = () => {
   });
 
   const defaultValues = {
-    datosComprador: {
-      ...datosCompradorFormDefaults,
-      ...(compradorType === 'Natural' ? datosNaturalDefaults : {}),
-      ...(compradorType === 'Juridico' ? datosJuridicoDefaults : {}),
-    },
-    datosVendedor: {
-      ...datosVendedorFormDefaults,
-      ...(vendedorType === 'Natural' ? datosNaturalDefaults : {}),
-      ...(vendedorType === 'Juridico' ? datosJuridicoDefaults : {}),
-    },
+    datosComprador: datosCompradorFormDefaults,
+    datosVendedor: datosVendedorFormDefaults,
     documentosInmuebles: documentosInmueblesFormDefaults,
     notaria: 'Notaria 38',
     soportePago: [],
   };
 
-  const methods = useForm<ClientFormState>({
-    defaultValues,
-    // reValidateMode: 'onChange',
-  });
-
+  const methods = useForm<ClientFormState>({ defaultValues });
   const { handleSubmit } = methods;
 
   const onSubmit = (data: ClientFormState) => {
@@ -80,7 +67,7 @@ const ClientForm: React.FC = () => {
         </Paper>
         <Comprador personType={compradorType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
         <Inmuebles validated={validatedSections.inmuebles} setValidated={(v) => setValidated('inmuebles', v)} />
-        <Vendedor personType={vendedorType} setPersonType={setVendedorType} validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
+        <Vendedor validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
         <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
         <Pago paymentValue={paymentValue} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>

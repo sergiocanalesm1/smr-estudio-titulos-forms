@@ -38,7 +38,7 @@ const InternalForm: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const onSubmit: SubmitHandler<InternalFormInputs> = async(data) => {
+  const onSubmit: SubmitHandler<InternalFormInputs> = async (data) => {
     setLoading(true);
     // Create FormData and append non-file fields using snake_case keys.
     // For payment_value, remove commas.
@@ -150,7 +150,6 @@ const InternalForm: React.FC = () => {
             />
           )}
         />
-        {/* Approval: single file upload */}
         <Controller
           name="approval"
           control={control}
@@ -163,10 +162,10 @@ const InternalForm: React.FC = () => {
               multiple={false}
               error={!!errors.approval}
               buttonLabel="Carta de Aprobación"
+              helperText="Carta de Aprobación"
             />
           )}
         />
-        {/* Valuation: single file upload */}
         <Controller
           name="valuation"
           control={control}
@@ -179,6 +178,7 @@ const InternalForm: React.FC = () => {
               multiple={false}
               error={!!errors.valuation}
               buttonLabel="Avalúo"
+              helperText="Avalúo"
             />
           )}
         />
@@ -195,6 +195,7 @@ const InternalForm: React.FC = () => {
               multiple={true}
               error={!!errors.tradition}
               buttonLabel="Certificado de Tradición"
+              helperText="Certificado de Tradición"
             />
           )}
         />

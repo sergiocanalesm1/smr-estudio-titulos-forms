@@ -21,7 +21,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
     formState: { errors },
   } = useFormContext();
 
-  const [isBBVA, setIsBBVA] = useState<"si" | "no">("no");
+  const [isBBVA, setIsBBVA] = useState<boolean>(false);
 
   const documentosErrors = errors?.documentosInmuebles as Partial<InmueblesForm> | undefined;
 
@@ -41,12 +41,13 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
         BANCO BBVA?
       </Typography>
       <RadioGroup
+        row
         value={isBBVA}
         defaultChecked
-        onChange={(e) => setIsBBVA(e.target.value as "si" | "no")}
+        onChange={(e) => setIsBBVA(e.target.value === 'true')}
       >
-        <FormControlLabel value="no" control={<Radio />} label="No" />
-        <FormControlLabel value="si" control={<Radio />} label="Sí" />
+        <FormControlLabel value={true} control={<Radio />} label="Sí" />
+        <FormControlLabel value={false} control={<Radio />} label="No" />
       </RadioGroup>
     </>
   )
@@ -92,7 +93,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
     <FormSection
       title={sectionNames.inmuebles}
       description=""
-      submitBtnText="Completar Sección"
+      submitBtnText="Validar Sección"
       loading={false}
       onSubmit={handleSectionSubmit}
       done={validated}
@@ -116,17 +117,17 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
           )}
         />
         <Controller
-          name="documentosInmuebles.linderosGenerales"
+          name="documentosInmuebles.linderos"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
             <DocumentUploader
               files={field.value}
               setFile={field.onChange}
-              transformedFileName="linderosGenerales"
+              transformedFileName="linderos"
               multiple={true}
-              error={!!documentosErrors?.linderosGenerales}
-              buttonLabel="Linderos Generales"
+              error={!!documentosErrors?.linderos}
+              buttonLabel="Linderos"
               helperText="Primeras 10 hojas, parte pertinente de los linderos generales y especiales de los inmuebles negociados, cuadro de áreas y coeficientes completo y hoja de cierre con firma del Notario de la constitución del reglamento de propiedad horizontal."
             />
           )}
@@ -183,7 +184,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
           )}
         />
         <BBVARadioGroup />
-        {isBBVA === "si" && <BBVASection />}
+        {isBBVA && <BBVASection />}
       </Box>
     </FormSection>
   );

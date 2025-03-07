@@ -17,7 +17,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   title,
   description,
   children,
-  submitBtnText = "Completar Sección",
+  submitBtnText = "Validar Sección",
   loading,
   onSubmit,
   done = false,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Box, TextField } from '@mui/material';
+import { Box, FormControlLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 import { DatosCompradorForm, DatosJuridico, DatosNatural, PersonType } from '../../../types';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
@@ -21,6 +21,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
         trigger,
         formState,
     } = useFormContext();
+    const [withPoder, setWithPoder] = React.useState<boolean>(false);
 
     const e = formState.errors?.datosComprador as Partial<DatosCompradorForm> | undefined;
 
@@ -78,10 +79,24 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
 
     );
 
+    const PoderOptional: React.FC = () => (
+        <>
+            <Typography>¿Alguna de las partes actúa mediante apoderado?</Typography>
+            <RadioGroup
+                row
+                value={withPoder}
+                defaultChecked
+                onChange={(e) => setWithPoder(e.target.value === 'true')}>
+                <FormControlLabel value={true} control={<Radio />} label="Sí" />
+                <FormControlLabel value={false} control={<Radio />} label="No" />
+            </RadioGroup>
+        </>
+    )
+
     return (
         <FormSection
             title={sectionNames.datosComprador}
-            submitBtnText="Completar Sección"
+            submitBtnText="Validar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}
@@ -104,7 +119,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                     variant="outlined"
                 />
                 <TextField
-                    label="Identificación"
+                    label="Identificación (NIT o CC)"
                     {...register('datosComprador.identificacion', { required: true })}
                     error={!!e?.identificacion}
                     variant="outlined"
@@ -127,37 +142,15 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                     variant="outlined"
                 />
                 <TextField
-                    label="Barrio"
-                    {...register('datosComprador.barrio', { required: true })}
-                    error={!!e?.barrio}
-                    variant="outlined"
-                />
-                <TextField
-                    label="Localidad"
-                    {...register('datosComprador.localidad', { required: true })}
-                    error={!!e?.localidad}
+                    label="Ciudad"
+                    {...register('datosComprador.ciudad', { required: true })}
+                    error={!!e?.ciudad}
                     variant="outlined"
                 />
                 <TextField
                     label="Departamento"
                     {...register('datosComprador.departamento', { required: true })}
                     error={!!e?.departamento}
-                    variant="outlined"
-                />
-                <TextField
-                    label="Código postal"
-                    {...register('datosComprador.codigoPostal', {
-                        required: true,
-                        pattern: { value: /^[+\d]+$/, message: 'Debe ser un número válido' },
-                    })}
-                    error={!!e?.codigoPostal}
-                    helperText={!!e?.codigoPostal ? 'Debe ser un número válido' : ''}
-                    variant="outlined"
-                />
-                <TextField
-                    label="Número de los certificados de tradición"
-                    {...register('datosComprador.certificadosTradicion', { required: true })}
-                    error={!!e?.certificadosTradicion}
                     variant="outlined"
                 />
                 {personType === 'Natural' ? <NaturalFields /> : personType === 'Juridico' ? <JuridicoFields /> : null}
@@ -179,20 +172,23 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                         />
                     )}
                 />
-                <Controller
-                    name={`datosComprador.poder`}
-                    control={control}
-                    render={({ field }) => (
-                        <DocumentUploader
-                            files={field.value}
-                            setFile={field.onChange}
-                            transformedFileName="poder"
-                            error={!!e?.poder}
-                            buttonLabel="Poder"
-                            helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
-                        />
-                    )}
-                />
+                <PoderOptional />
+                {withPoder &&
+                    <Controller
+                        name={`datosComprador.poder`}
+                        control={control}
+                        render={({ field }) => (
+                            <DocumentUploader
+                                files={field.value}
+                                setFile={field.onChange}
+                                transformedFileName="poder"
+                                error={!!e?.poder}
+                                buttonLabel="Poder"
+                                helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
+                            />
+                        )}
+                    />
+                }
             </Box>
         </FormSection>
     );

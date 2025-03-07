@@ -54,7 +54,7 @@ const Notaria: React.FC<NotariaProps> = ({ validated, setValidated }) => {
         <FormSection
             title={sectionNames.notaria}
             description="Estas son las Notarías con las que tenemos convenio, pero si desea puede escoger alguna diferente."
-            submitBtnText="Completar Sección"
+            submitBtnText="Validar Sección"
             loading={false}
             onSubmit={handleSectionSubmit}
             done={validated}
