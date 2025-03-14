@@ -91,7 +91,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
 
   return (
     <FormSection
-      title={sectionNames.inmuebles}
+      title={sectionNames.documentosInmuebles}
       description=""
       submitBtnText="Validar Sección"
       loading={false}

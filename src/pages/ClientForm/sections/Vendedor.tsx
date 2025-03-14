@@ -48,7 +48,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
 
     const PoderOptional: React.FC = () => (
         <>
-            <Typography>¿Alguna de las partes actúa mediante apoderado?</Typography>
+            <Typography>¿Actúa mediante apoderado?</Typography>
             <RadioGroup
                 row
                 value={withPoder}
@@ -148,7 +148,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
                                     transformedFileName="poder"
                                     error={!!e?.poder}
                                     buttonLabel="Poder"
-                                    helperText="Poder, en caso de que alguna de las partes actúe mediante apoderado."
+                                    helperText="Poder, en caso de actuar mediante apoderado."
                                 />
                             )}
                         />

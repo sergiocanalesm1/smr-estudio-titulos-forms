@@ -1,7 +1,7 @@
 export type ClientFormState = {
     datosComprador: DatosCompradorForm & (DatosNatural | DatosJuridico);
     datosVendedor: DatosVendedorForm & (DatosNatural | DatosJuridico);
-    inmuebles: InmueblesForm;
+    documentosInmuebles: InmueblesForm;
     notaria: string;
     soportePago: File[];
 };
