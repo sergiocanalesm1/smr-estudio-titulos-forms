@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import { Container, Button, Box, Paper, Typography } from '@mui/material';
 
 import { datosCompradorFormDefaults, documentosInmueblesFormDefaults, datosVendedorFormDefaults } from '../../utils/formDefaults';
-import { ClientFormState, PersonType } from '../../types';
+import { ClientFormState, InternalFormInputs, PersonType } from '../../types';
 import Inmuebles from './sections/Inmuebles';
 import Comprador from './sections/Comprador';
 import Vendedor from './sections/Vendedor';
@@ -18,8 +18,40 @@ import { parseCamelCase } from '../../utils/utils';
 const ClientForm: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const compradorType: PersonType = (queryParams.get('person_type') as PersonType) ?? 'Natural'; // assert
-  const paymentValue = queryParams.get('payment_value') ?? '0'; // change
+
+  const payload = queryParams.get('payload');
+  const [params, setParams] = useState<Partial<InternalFormInputs>>({
+    caseID: '',
+    compradorName: '',
+    compradorEmail: '',
+    compradorType: 'Natural',
+    paymentValue: '0',
+    bancoHipoteca: '',
+  });
+
+  useEffect(() => {
+    if (payload) {
+      try {
+        const decodedPayload = JSON.parse(atob(payload));
+        setParams({
+          caseID: decodedPayload.case_id ?? '',
+          compradorName: decodedPayload.comprador_name ?? '',
+          compradorEmail: decodedPayload.comprador_email ?? '',
+          compradorType: decodedPayload.comprador_type as PersonType ?? 'Natural',
+          paymentValue: decodedPayload.payment_value ?? '0',
+          bancoHipoteca: decodedPayload.banco_hipoteca ?? '',
+        });
+      } catch (error) {
+        console.error('Failed to decode payload:', error);
+      }
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    // prefill
+    datosCompradorFormDefaults.email = params.compradorEmail;
+    datosCompradorFormDefaults.nombreCliente = params.compradorName;
+  }, [params])
 
   const [validatedSections, setValidatedSections] = useState<Record<keyof ClientFormState, boolean>>({
     datosComprador: false,
@@ -42,7 +74,6 @@ const ClientForm: React.FC = () => {
 
   const onSubmit = (data: ClientFormState) => {
     // validate all sections and set state
-    console.log('Final Form Data:', data);
     const formData = new FormData();
     const doc = new jsPDF();
     let yPosition = 20;
@@ -61,7 +92,7 @@ const ClientForm: React.FC = () => {
           yPosition += 10; // move down for the next field
         }
         else if (Array.isArray(value) && value.length > 0) {
-          formData.append(`${party}_${value[0].name}`, value[0]);
+          formData.append(`documents`, value[0]);
         }
       });
 
@@ -78,7 +109,6 @@ const ClientForm: React.FC = () => {
     formData.append(`Datos`, pdfBlob, `datos.pdf`);
     doc.close();
 
-    console.log('formdata')
     formData.forEach((value, key) => {
       console.log(key, value);
     });
@@ -110,15 +140,15 @@ const ClientForm: React.FC = () => {
             <br /><br />
             - Todos los documentos solicitados deben adjuntarse en formato PDF.<br />
             - Verifique que los documentos estén completos y legibles antes de enviarlos. La documentación incompleta generará retrasos significativos en el trámite.<br />
-            - Al finalizar el formulario deberá adjuntar el comprobante del pago correspondiente a los honorarios legales. Las instrucciones detalladas para realizar este pago están incluidas claramente en la última sección del formulario.<br />
+            - Al finalizar el formulario deberá adjuntar el comprobante del pago correspondiente a los honorarios. Las instrucciones detalladas para realizar este pago están incluidas claramente en la última sección del formulario.<br />
             - En caso de requerir documentos adicionales tras la revisión inicial, se le notificará vía correo electrónico.
           </Typography>
         </Paper>
-        <Comprador personType={compradorType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
-        <Inmuebles validated={validatedSections.documentosInmuebles} setValidated={(v) => setValidated('documentosInmuebles', v)} />
+        <Comprador personType={params.compradorType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
+        <Inmuebles validated={validatedSections.documentosInmuebles} setValidated={(v) => setValidated('documentosInmuebles', v)} bancoHipoteca={params.bancoHipoteca} />
         <Vendedor validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
         <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
-        <Pago paymentValue={paymentValue} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
+        <Pago paymentValue={params.paymentValue!} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
             Enviar Formulario

@@ -3,19 +3,7 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { TextField, RadioGroup, FormControlLabel, Radio, Box, Container } from '@mui/material';
 import FormSection from '../components/FormSection';
 import DocumentUploader from '../components/DocumentUploader';
-import { PersonType } from '../types';
-
-
-interface InternalFormInputs {
-  caseID: string;
-  clientName: string;
-  clientEmail: string;
-  personType: PersonType;
-  paymentValue: string;
-  approval: File[];
-  valuation: File[];
-  tradition: File[];
-}
+import { InternalFormInputs } from '../types';
 
 const InternalForm: React.FC = () => {
   const {
@@ -26,10 +14,11 @@ const InternalForm: React.FC = () => {
   } = useForm<InternalFormInputs>({
     defaultValues: {
       caseID: '',
-      clientName: '',
-      clientEmail: '',
-      personType: 'Natural',
+      compradorName: '',
+      compradorEmail: '',
+      compradorType: 'Natural',
       paymentValue: '',
+      bancoHipoteca: '',
       approval: [],
       valuation: [],
       tradition: [],
@@ -43,11 +32,12 @@ const InternalForm: React.FC = () => {
     // Create FormData and append non-file fields using snake_case keys.
     // For payment_value, remove commas.
     const formData = new FormData();
-    formData.append('caso_id', data.caseID);
-    formData.append('name', data.clientName);
-    formData.append('email', data.clientEmail);
-    formData.append('person_type', data.personType);
+    formData.append('case_id', data.caseID);
+    formData.append('comprador_name', data.compradorName);
+    formData.append('comprador_email', data.compradorEmail);
+    formData.append('comprador_type', data.compradorType);
     formData.append('payment_value', data.paymentValue.replace(/,/g, ''));
+    formData.append('banco_hipoteca', data.bancoHipoteca); // optional
 
     // Combine all file arrays and append each file under the same key "documents"
     const allFiles = [...data.approval, ...data.valuation, ...data.tradition];
@@ -55,15 +45,18 @@ const InternalForm: React.FC = () => {
       formData.append('documents', file);
     });
 
-    // try {
-    //   const response = await fetch('https://smr-internal-form-submission-892018225870.us-central1.run.app', {
-    //     method: 'POST',
-    //     body: formData,
-    //   })
-    //   console.log(response);
-    // } catch (error) {
-    //   console.error('Error logging FormData:', error);
-    // }
+    try {
+      const response = await fetch('https://et-internal-gateway-cid74lu6.uc.gateway.dev/submit', {
+        method: 'POST',
+        headers: {
+          'x-api-key': import.meta.env.VITE_X_API_KEY
+        },
+        body: formData,
+      })
+      console.log(response);
+    } catch (error) {
+      console.error('Error logging FormData:', error);
+    }
     setLoading(false);
   };
 
@@ -80,34 +73,30 @@ const InternalForm: React.FC = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* Case ID: required; error indicated only by red outline */}
           <TextField
             label="Caso ID"
             {...register('caseID', { required: true })}
             error={!!errors.caseID}
             variant="outlined"
           />
-          {/* Client Name: required; error indicated only by red outline */}
           <TextField
             label="Nombre Cliente"
-            {...register('clientName', { required: true })}
-            error={!!errors.clientName}
+            {...register('compradorName', { required: true })}
+            error={!!errors.compradorName}
             variant="outlined"
           />
-          {/* Client Email: required, with error text on invalid entry */}
           <TextField
             label="Correo Cliente"
-            {...register('clientEmail', {
+            {...register('compradorEmail', {
               required: true,
               pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
             })}
-            error={!!errors.clientEmail}
-            helperText={errors.clientEmail ? errors.clientEmail.message : ''}
+            error={!!errors.compradorEmail}
+            helperText={errors.compradorEmail ? errors.compradorEmail.message : ''}
             variant="outlined"
           />
-          {/* Person Type: radio buttons defaulting to "Natural" */}
           <Box sx={{ p: 1 }}>
-            <RadioGroup row {...register('personType', { required: true })} defaultChecked defaultValue="Natural">
+            <RadioGroup row {...register('compradorType', { required: true })} defaultChecked defaultValue="Natural">
               <FormControlLabel value="Natural" control={<Radio />} label="Natural" />
               <FormControlLabel value="Juridico" control={<Radio />} label="Jurídico" />
             </RadioGroup>
@@ -150,6 +139,13 @@ const InternalForm: React.FC = () => {
                 variant="outlined"
               />
             )}
+          />
+          <TextField
+            label="Banco Hipoteca"
+            {...register('bancoHipoteca')}
+            error={!!errors.compradorName}
+            variant="outlined"
+            helperText='Indicar el banco si el cliente tiene una hipoteca'
           />
           <Controller
             name="approval"

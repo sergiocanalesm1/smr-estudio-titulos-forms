@@ -11,8 +11,9 @@ export type InmueblesForm = {
     linderos: File[];
     pazYSalvo: File[];
     valorOperacion: string;
-    bbva?: {
-        hipoteca: File[];
+    hipoteca?: {
+        banco: string;
+        id: File[];
         manifestacionPago: string;
         manifestacionCliente: string;
     }
@@ -47,3 +48,15 @@ export type DatosJuridico = {
 export type PersonType = 'Natural' | 'Juridico';
 
 export type PartyType = 'Comprador' | 'Vendedor';
+
+export interface InternalFormInputs {
+    caseID: string;
+    compradorName: string;
+    compradorEmail: string;
+    compradorType: PersonType;
+    paymentValue: string;
+    bancoHipoteca: string;
+    approval: File[];
+    valuation: File[];
+    tradition: File[];
+}

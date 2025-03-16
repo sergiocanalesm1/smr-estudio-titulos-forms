@@ -1,8 +1,8 @@
 
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { TextField, Box, RadioGroup, FormControlLabel, Radio, Typography } from '@mui/material';
+import { TextField, Box, Typography } from '@mui/material';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
 import { InmueblesForm } from '../../../types';
@@ -11,17 +11,17 @@ import { sectionNames } from '../../../utils/constants';
 interface InmueblesProps {
   validated: boolean;
   setValidated: (validated: boolean) => void;
+  bancoHipoteca?: string;
 }
 
-const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
+const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated, bancoHipoteca }) => {
   const {
     control,
     trigger,
     register,
+    setValue,
     formState: { errors },
   } = useFormContext();
-
-  const [isBBVA, setIsBBVA] = useState<boolean>(false);
 
   const documentosErrors = errors?.documentosInmuebles as Partial<InmueblesForm> | undefined;
 
@@ -29,42 +29,30 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
     e.preventDefault();
     const isValid = await trigger('documentosInmuebles');
     if (isValid) {
+      if (bancoHipoteca) {
+        setValue('documentosInmuebles.hipoteca.banco', bancoHipoteca)
+      }
       setValidated(true);
       console.log('documentosInmuebles section is valid!');
     }
   };
 
-  const BBVARadioGroup: React.FC = () => (
+  const HipotecaSection: React.FC = () => (
     <>
-      <Typography variant='body1'>
-        ¿Los inmuebles soportan una hipoteca constituida por los actuales propietarios a favor de
-        BANCO BBVA?
+      <Typography>
+        Por favor adjuntar la siguiente documentación para la hipoteca del banco {bancoHipoteca}
       </Typography>
-      <RadioGroup
-        row
-        value={isBBVA}
-        defaultChecked
-        onChange={(e) => setIsBBVA(e.target.value === 'true')}
-      >
-        <FormControlLabel value={true} control={<Radio />} label="Sí" />
-        <FormControlLabel value={false} control={<Radio />} label="No" />
-      </RadioGroup>
-    </>
-  )
-
-  const BBVASection: React.FC = () => (
-    <>
       <Controller
-        name="documentosInmuebles.bbva.hipoteca"
+        name="documentosInmuebles.hipoteca.id"
         control={control}
         rules={{ required: true }}
         render={({ field }) => (
           <DocumentUploader
             files={field.value}
             setFile={field.onChange}
-            transformedFileName="hipotecaBBVA"
+            transformedFileName="hipoteca_id"
             multiple={false}
-            error={!!documentosErrors?.bbva?.hipoteca}
+            error={!!documentosErrors?.hipoteca?.id}
             buttonLabel="Hipoteca"
             helperText="La identificación del crédito hipotecario allí existente, con su saldo actual y si está al día, y el inmueble objeto de la garantía."
           />
@@ -73,16 +61,16 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
       <TextField // multiline with placeholder?
         multiline
         label="Manifestación de pago"
-        {...register("documentosInmuebles.bbva.manifestacionPago", { required: true })}
-        error={!!documentosErrors?.bbva?.manifestacionPago}
+        {...register("documentosInmuebles.hipoteca.manifestacionPago", { required: true })}
+        error={!!documentosErrors?.hipoteca?.manifestacionPago}
         helperText="Manifestación de que se obligan a cancelar la hipoteca una vez se les pague el crédito hipotecario."
         variant="outlined"
       />
       <TextField // multiline with placeholder?
         multiline
         label="Manifestación del cliente"
-        {...register("documentosInmuebles.bbva.manifestacionCliente", { required: true })}
-        error={!!documentosErrors?.bbva?.manifestacionCliente}
+        {...register("documentosInmuebles.hipoteca.manifestacionCliente", { required: true })}
+        error={!!documentosErrors?.hipoteca?.manifestacionCliente}
         helperText="Manifestación expresa de que el cliente no tiene otros productos de crédito atados a la garantía hipotecaria."
         variant="outlined"
       />
@@ -183,8 +171,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated }) => {
             />
           )}
         />
-        <BBVARadioGroup />
-        {isBBVA && <BBVASection />}
+        {bancoHipoteca && <HipotecaSection />}
       </Box>
     </FormSection>
   );
