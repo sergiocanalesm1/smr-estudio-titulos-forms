@@ -1,23 +1,41 @@
-import React from 'react';
-import { Paper, Box, Typography, Button, CircularProgress } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Paper, Box, Typography, Button, CircularProgress, Collapse } from '@mui/material';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 interface FormSectionProps {
   title: string;
   description?: string;
   children: React.ReactNode;
-  submitBtnText: string;
-  loading: boolean;
+  submitBtnText?: string;
+  loading?: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  done?: boolean;
+  setDone?: (value: boolean) => void;
 }
 
 const FormSection: React.FC<FormSectionProps> = ({
   title,
   description,
   children,
-  submitBtnText,
+  submitBtnText = "Validar Sección",
   loading,
   onSubmit,
+  done = false,
+  setDone = () => { },
 }) => {
+  const [expanded, setExpanded] = React.useState(!done);
+
+  useEffect(() => {
+    if (done) {
+      setExpanded(false);
+    }
+  }, [done]);
+
+  const handleModify = () => {
+    setDone(false);
+    setExpanded(true);
+  };
+
   return (
     <Paper
       component="form"
@@ -26,28 +44,39 @@ const FormSection: React.FC<FormSectionProps> = ({
       sx={{
         p: 4,
         borderRadius: 2,
-        backgroundColor: '#fff',
         maxWidth: 600,
         margin: '0 auto',
-        my: 4,
+        mb: 4,
       }}
     >
-      <Typography variant="h5" component="h2" gutterBottom>
-        {title}
-      </Typography>
-      {description && (
-        <Typography variant="body2" color="textSecondary" gutterBottom>
-          {description}
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h5" component="h2" gutterBottom>
+          {title}
         </Typography>
-      )}
-      <Box sx={{ my: 3 }}>
-        {children}
+        {done && (
+          <Box display="flex" alignItems="center">
+            <Button variant="outlined" onClick={handleModify} sx={{ mr: 1 }}>
+              Modificar
+            </Button>
+            <CheckCircleOutline color="success" />
+          </Box>
+        )}
       </Box>
-      <Box sx={{ textAlign: 'right' }}>
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
-          {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
-        </Button>
-      </Box>
+      <Collapse in={expanded}>
+        {description && (
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            {description}
+          </Typography>
+        )}
+        <Box sx={{ my: 3 }}>
+          {children}
+        </Box>
+        <Box sx={{ textAlign: 'right' }}>
+          <Button type="submit" variant="contained" color="primary" disabled={loading}>
+            {loading ? <CircularProgress size={24} color="inherit" /> : submitBtnText}
+          </Button>
+        </Box>
+      </Collapse>
     </Paper>
   );
 };
