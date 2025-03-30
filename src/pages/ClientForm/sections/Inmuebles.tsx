@@ -50,7 +50,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated, bancoHip
           <DocumentUploader
             files={field.value}
             setFile={field.onChange}
-            transformedFileName="hipoteca_id"
+            transformedFileName="inmuebles_hipoteca_id"
             multiple={false}
             error={!!documentosErrors?.hipoteca?.id}
             buttonLabel="Hipoteca"
@@ -96,7 +96,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated, bancoHip
             <DocumentUploader
               files={field.value}
               setFile={field.onChange}
-              transformedFileName="escritura881"
+              transformedFileName="inmuebles_escritura_881"
               multiple={false}
               error={!!documentosErrors?.escritura881}
               buttonLabel="Escritura 881"
@@ -112,7 +112,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated, bancoHip
             <DocumentUploader
               files={field.value}
               setFile={field.onChange}
-              transformedFileName="linderos"
+              transformedFileName="inmuebles_linderos"
               multiple={true}
               error={!!documentosErrors?.linderos}
               buttonLabel="Linderos"
@@ -128,7 +128,7 @@ const Inmuebles: React.FC<InmueblesProps> = ({ validated, setValidated, bancoHip
             <DocumentUploader
               files={field.value}
               setFile={field.onChange}
-              transformedFileName="pazYSalvo"
+              transformedFileName="inmuebles_paz_y_salvo"
               multiple={true}
               error={!!documentosErrors?.pazYSalvo}
               buttonLabel="Paz y Salvo"

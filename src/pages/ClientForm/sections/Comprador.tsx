@@ -53,7 +53,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                     <DocumentUploader
                         files={field.value}
                         setFile={field.onChange}
-                        transformedFileName="certificadoExistencia"
+                        transformedFileName="comprador_certificado_existencia"
                         error={!!(e as Partial<DatosCompradorForm & DatosJuridico>)?.certificadoExistencia}
                         buttonLabel="Certificado"
                         helperText="Certificado de existencia y representación legal no mayor a 60 días."
@@ -68,7 +68,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                     <DocumentUploader
                         files={field.value}
                         setFile={field.onChange}
-                        transformedFileName="certificadoComposicion"
+                        transformedFileName="comprador_certificado_composicion"
                         error={!!(e as Partial<DatosCompradorForm & DatosJuridico>)?.certificadoComposicion}
                         buttonLabel="Certificado"
                         helperText="Certificado de composición accionaria no mayor a 60 días firmada por el representante legal o revisor fiscal, hasta llegar a la persona natural."
@@ -138,7 +138,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                         pattern: { value: /^[+\d]+$/, message: 'Debe ser un número válido' },
                     })}
                     error={!!e?.tel}
-                    helperText={!!e?.tel ? 'Debe ser un número válido' : ''}
+                    helperText={e?.tel ? 'Debe ser un número válido' : ''}
                     variant="outlined"
                 />
                 <TextField
@@ -162,7 +162,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                         <DocumentUploader
                             files={field.value}
                             setFile={field.onChange}
-                            transformedFileName="identificacion"
+                            transformedFileName="comprador_id"
                             error={!!e?.ids}
                             buttonLabel="Documento de Identidad"
                             helperText={personType === 'Natural'
@@ -181,7 +181,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                             <DocumentUploader
                                 files={field.value}
                                 setFile={field.onChange}
-                                transformedFileName="poder"
+                                transformedFileName="comprador_poder"
                                 error={!!e?.poder}
                                 buttonLabel="Poder"
                                 helperText="Poder, en caso de actuar mediante apoderado."

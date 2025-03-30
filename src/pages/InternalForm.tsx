@@ -29,35 +29,47 @@ const InternalForm: React.FC = () => {
 
   const onSubmit: SubmitHandler<InternalFormInputs> = async (data) => {
     setLoading(true);
-    // Create FormData and append non-file fields using snake_case keys.
-    // For payment_value, remove commas.
+    
+    // Create FormData and append non-file fields using snake_case keys
     const formData = new FormData();
     formData.append('case_id', data.caseID);
     formData.append('comprador_name', data.compradorName);
     formData.append('comprador_email', data.compradorEmail);
     formData.append('comprador_type', data.compradorType);
     formData.append('payment_value', data.paymentValue.replace(/,/g, ''));
-    formData.append('banco_hipoteca', data.bancoHipoteca); // optional
-
+    if (data.bancoHipoteca) {
+      formData.append('banco_hipoteca', data.bancoHipoteca);
+    }
+  
     // Combine all file arrays and append each file under the same key "documents"
     const allFiles = [...data.approval, ...data.valuation, ...data.tradition];
     allFiles.forEach((file) => {
       formData.append('documents', file);
     });
-
+  
     try {
-      const response = await fetch('https://et-internal-gateway-cid74lu6.uc.gateway.dev/submit', {
+      const response = await fetch(`https://${import.meta.env.VITE_GW_URL}/internal`, {
         method: 'POST',
         headers: {
           'x-api-key': import.meta.env.VITE_X_API_KEY
         },
         body: formData,
-      })
-      console.log(response);
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Submission successful:', result);
+      // Handle success (show success message, redirect, etc.)
     } catch (error) {
-      console.error('Error logging FormData:', error);
+      console.error('Error submitting form:', error);
+      // Handle error (show error message to user)
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -155,7 +167,7 @@ const InternalForm: React.FC = () => {
               <DocumentUploader
                 files={field.value}
                 setFile={(files: File[]) => field.onChange(files)}
-                transformedFileName="carta_de_aprobacion"
+                transformedFileName="comprador_carta_de_aprobacion"
                 multiple={false}
                 error={!!errors.approval}
                 buttonLabel="Carta de Aprobación"
@@ -171,7 +183,7 @@ const InternalForm: React.FC = () => {
               <DocumentUploader
                 files={field.value}
                 setFile={(files: File[]) => field.onChange(files)}
-                transformedFileName="avaluo"
+                transformedFileName="comprador_avaluo"
                 multiple={false}
                 error={!!errors.valuation}
                 buttonLabel="Avalúo"
@@ -188,7 +200,7 @@ const InternalForm: React.FC = () => {
               <DocumentUploader
                 files={field.value}
                 setFile={(files: File[]) => field.onChange(files)}
-                transformedFileName="certificado_de_tradicion"
+                transformedFileName="comprador_certificado_de_tradicion"
                 multiple={true}
                 error={!!errors.tradition}
                 buttonLabel="Certificado de Tradición"

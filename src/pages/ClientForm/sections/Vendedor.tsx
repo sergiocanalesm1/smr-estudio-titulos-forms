@@ -79,7 +79,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
                     <DocumentUploader
                         files={field.value}
                         setFile={field.onChange}
-                        transformedFileName="certificadoExistencia"
+                        transformedFileName="vendedor_certificado_existencia"
                         error={!!e?.certificadoExistencia}
                         buttonLabel="Certificado"
                         helperText="Certificado de existencia y representación legal no mayor a 60 días."
@@ -94,7 +94,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
                     <DocumentUploader
                         files={field.value}
                         setFile={field.onChange}
-                        transformedFileName="certificadoComposicion"
+                        transformedFileName="vendedor_certificado_composicion"
                         error={!!e?.certificadoComposicion}
                         buttonLabel="Certificado"
                         helperText="Certificado de composición accionaria no mayor a 60 días firmada por el representante legal o revisor fiscal, hasta llegar a la persona natural."
@@ -126,7 +126,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
                             <DocumentUploader
                                 files={field.value}
                                 setFile={field.onChange}
-                                transformedFileName="identificacion"
+                                transformedFileName="vendedor_id"
                                 error={!!e?.ids}
                                 buttonLabel="Documento de Identidad"
                                 helperText={personType === 'Natural'
@@ -145,7 +145,7 @@ const Vendedor: React.FC<VendedorProps> = ({ validated, setValidated }) => {
                                 <DocumentUploader
                                     files={field.value}
                                     setFile={field.onChange}
-                                    transformedFileName="poder"
+                                    transformedFileName="vendedor_poder"
                                     error={!!e?.poder}
                                     buttonLabel="Poder"
                                     helperText="Poder, en caso de actuar mediante apoderado."

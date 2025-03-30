@@ -46,7 +46,7 @@ const Pago: React.FC<PagoProps> = ({ paymentValue, validated, setValidated }) =>
                     <DocumentUploader
                         files={field.value}
                         setFile={field.onChange}
-                        transformedFileName="soportePago"
+                        transformedFileName="pago_soporte"
                         multiple={false}
                         error={!!errors?.soportePago}
                         buttonLabel="Soporte de Pago"
