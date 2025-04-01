@@ -5,7 +5,7 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 
 const supabase = createClient(
-    `https://${import.meta.env.VITE_SB_PROJECT_URL}.supabase.co`, 
+    `https://${import.meta.env.VITE_SB_PROJECT_URL}.supabase.co`,
     import.meta.env.VITE_SB_KEY
 );
 
@@ -32,11 +32,12 @@ const AuthComponent: React.FC<AuthProps> = ({ component }) => {
 
     if (!session) {
         return (
-            <Auth 
+            <Auth
                 supabaseClient={supabase}
-                appearance={{ theme: ThemeSupa }} 
+                appearance={{ theme: ThemeSupa }}
                 showLinks={false}
                 view='sign_in'
+                providers={[]}
             />)
     }
     else {

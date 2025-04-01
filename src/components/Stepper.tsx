@@ -7,9 +7,10 @@ import { ClientFormState } from '../types';
 interface StepperProps {
     validatedSections: Record<keyof ClientFormState, boolean>;
     onSubmit: () => void;
+    loading: boolean;
 }
 
-const Stepper: React.FC<StepperProps> = ({ validatedSections, onSubmit }) => {
+const Stepper: React.FC<StepperProps> = ({ validatedSections, onSubmit, loading }) => {
     const allSectionsValidated = Object.values(validatedSections).every(Boolean);
     return (
         <Box position="fixed" top={0} right={0} m={2}>
@@ -27,8 +28,8 @@ const Stepper: React.FC<StepperProps> = ({ validatedSections, onSubmit }) => {
 
                 {allSectionsValidated && (
                     <Box mt={2} textAlign="right">
-                        <Button variant="contained" color="primary" onClick={onSubmit}>
-                            Enviar
+                        <Button variant="contained" color="primary" onClick={onSubmit} disabled={loading}>
+                            {loading ? 'Enviando...' : 'Enviar'}
                         </Button>
                     </Box>
                 )}

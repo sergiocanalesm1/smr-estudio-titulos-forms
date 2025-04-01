@@ -12,8 +12,8 @@ import Vendedor from './sections/Vendedor';
 import Notaria from './sections/Notaria';
 import Pago from './sections/Pago';
 import Stepper from '../../components/Stepper';
+import InfoModal from '../../components/InfoModal';
 import { parseCamelCase } from '../../utils/utils';
-
 
 const ClientForm: React.FC = () => {
   const location = useLocation();
@@ -29,6 +29,10 @@ const ClientForm: React.FC = () => {
     bancoHipoteca: '',
     token: ''
   });
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const defaultValues = {
     datosComprador: datosCompradorFormDefaults,
@@ -63,8 +67,8 @@ const ClientForm: React.FC = () => {
   useEffect(() => {
     // prefill
     if (params.compradorName !== undefined && params.compradorEmail !== undefined) {
-      setValue('datosComprador.nombreCliente', params.compradorName, { shouldTouch: true });
-      setValue('datosComprador.email', params.compradorEmail, { shouldTouch: true});
+      setValue('datosComprador.nombreCliente', params.compradorName);
+      setValue('datosComprador.email', params.compradorEmail);
     }
   }, [params, setValue])
 
@@ -81,12 +85,12 @@ const ClientForm: React.FC = () => {
     const pageHeight = doc.internal.pageSize.height;
     const margin = 20;
     let yPosition = margin;
-  
+
     doc.setFont('helvetica', 'bold');
     doc.text(params.caseID, 10, yPosition);
     yPosition += 20;
-  
-    
+
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDatos = (party: string, datos: any, xOffset = 0) => {
       if (yPosition + 10 > pageHeight - margin) {
@@ -97,9 +101,9 @@ const ClientForm: React.FC = () => {
       doc.text(`${parseCamelCase(party)}`, 10 + xOffset, yPosition);
       doc.setFont('helvetica', 'normal');
       yPosition += 20;
-  
+
       Object.entries(datos).forEach(([field, value]) => {
-        if (typeof value === 'string') {
+        if (typeof value === 'string' && value) {
           doc.text(`${parseCamelCase(field)}: ${value}`, 10 + xOffset, yPosition);
           yPosition += 10;
         } else if (typeof value === 'object') {
@@ -107,21 +111,21 @@ const ClientForm: React.FC = () => {
             handleDatos(field, value, xOffset + 10);
           }
         }
-  
+
         if (yPosition + 10 > pageHeight - margin) {
           doc.addPage();
           yPosition = margin;
         }
       });
-  
+
       yPosition += 10;
     };
-  
+
     handleDatos('Comprador', data.datosComprador);
     handleDatos('Inmuebles', data.documentosInmuebles);
     handleDatos('Vendedor', data.datosVendedor);
     handleDatos('Notaria', { notaria: data.notaria });
-  
+
     const pdfBlob = doc.output('blob');
     doc.close();
     return pdfBlob;
@@ -130,7 +134,7 @@ const ClientForm: React.FC = () => {
   const prepareFormData = (data: ClientFormState, pdfBlob: Blob): FormData => {
     const formData = new FormData();
     formData.append('case_id', params.caseID);
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const appendFiles = (datos: any) => {
       Object.values(datos).forEach(value => {
@@ -142,17 +146,18 @@ const ClientForm: React.FC = () => {
         }
       });
     };
-  
+
     appendFiles(data.datosComprador);
     appendFiles(data.documentosInmuebles);
     appendFiles(data.datosVendedor);
     appendFiles({ soportePago: data.soportePago });
-  
+
     formData.append('documents', pdfBlob, 'datos.pdf');
     return formData;
   };
-  
+
   const onSubmit = async (data: ClientFormState) => {
+    setLoading(true);
     const pdfBlob = generatePDF(data);
     const formData = prepareFormData(data, pdfBlob);
     try {
@@ -163,18 +168,21 @@ const ClientForm: React.FC = () => {
         },
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.error || `Error: ${response.status}`);
       }
-  
+
       const result = await response.json();
       console.log('Submission successful:', result);
-      // Handle success (show success message, redirect, etc.)
+      setError(false);
     } catch (error) {
       console.error('Error submitting form:', error);
-      // Handle error (show error message to user)
+      setError(true);
+    } finally {
+      setLoading(false);
+      setOpenDialog(true);
     }
   };
 
@@ -184,7 +192,7 @@ const ClientForm: React.FC = () => {
 
   return (
     <Container sx={{ py: 2 }}>
-      <Stepper validatedSections={validatedSections} onSubmit={handleSubmit(onSubmit)} />
+      <Stepper validatedSections={validatedSections} onSubmit={handleSubmit(onSubmit)} loading={loading} />
       <FormProvider {...methods}>
         <Paper elevation={1} sx={{
           p: 4,
@@ -213,11 +221,22 @@ const ClientForm: React.FC = () => {
         <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
         <Pago paymentValue={params.paymentValue!} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
-          <Button onClick={handleSubmit(onSubmit)} type="submit" variant="contained" color="primary">
-            Enviar Formulario
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+          >
+            {loading ? 'Enviando...' : 'Enviar Formulario'}
           </Button>
         </Box>
       </FormProvider>
+      <InfoModal
+        open={openDialog}
+        onClose={() => { setOpenDialog(false); setError(false); }}
+        isError={error}
+      />
     </Container>
   );
 };

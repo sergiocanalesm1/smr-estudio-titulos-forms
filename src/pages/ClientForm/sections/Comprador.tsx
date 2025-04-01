@@ -104,19 +104,22 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
-                    label="Nombre del cliente"
                     {...register('datosComprador.nombreCliente', { required: true })}
-                    error={!!e?.nombreCliente}
-                    variant="outlined"
+                    variant='standard'
+                    slotProps={{
+                        input: {
+                            readOnly: true,
+                        }
+                    }}
                 />
                 <TextField
-                    label="Correo electrónico"
-                    {...register('datosComprador.email', {
-                        required: true,
-                        pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
-                    })}
-                    error={!!e?.email}
-                    variant="outlined"
+                    {...register('datosComprador.email', { required: true })}
+                    variant='standard'
+                    slotProps={{
+                        input: {
+                            readOnly: true,
+                        }
+                    }}
                 />
                 <TextField
                     label="Identificación (NIT o CC)"

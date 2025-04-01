@@ -3,6 +3,7 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { TextField, RadioGroup, FormControlLabel, Radio, Box, Container } from '@mui/material';
 import FormSection from '../components/FormSection';
 import DocumentUploader from '../components/DocumentUploader';
+import InfoModal from '../components/InfoModal';
 import { InternalFormInputs } from '../types';
 
 const InternalForm: React.FC = () => {
@@ -26,10 +27,12 @@ const InternalForm: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [error, setError] = useState(false);
 
   const onSubmit: SubmitHandler<InternalFormInputs> = async (data) => {
     setLoading(true);
-    
+
     // Create FormData and append non-file fields using snake_case keys
     const formData = new FormData();
     formData.append('case_id', data.caseID);
@@ -40,13 +43,13 @@ const InternalForm: React.FC = () => {
     if (data.bancoHipoteca) {
       formData.append('banco_hipoteca', data.bancoHipoteca);
     }
-  
+
     // Combine all file arrays and append each file under the same key "documents"
     const allFiles = [...data.approval, ...data.valuation, ...data.tradition];
     allFiles.forEach((file) => {
       formData.append('documents', file);
     });
-  
+
     try {
       const response = await fetch(`https://${import.meta.env.VITE_GW_URL}/internal`, {
         method: 'POST',
@@ -55,20 +58,20 @@ const InternalForm: React.FC = () => {
         },
         body: formData,
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.error || `Error: ${response.status}`);
       }
-      
-      const result = await response.json();
-      console.log('Submission successful:', result);
-      // Handle success (show success message, redirect, etc.)
+
+      await response.json();
     } catch (error) {
       console.error('Error submitting form:', error);
+      setError(true);
       // Handle error (show error message to user)
     } finally {
       setLoading(false);
+      setOpenDialog(true);
     }
   };
 
@@ -107,12 +110,20 @@ const InternalForm: React.FC = () => {
             helperText={errors.compradorEmail ? errors.compradorEmail.message : ''}
             variant="outlined"
           />
-          <Box sx={{ p: 1 }}>
-            <RadioGroup row {...register('compradorType', { required: true })} defaultChecked defaultValue="Natural">
-              <FormControlLabel value="Natural" control={<Radio />} label="Natural" />
-              <FormControlLabel value="Juridico" control={<Radio />} label="Jurídico" />
-            </RadioGroup>
-          </Box>
+          <Controller
+            name="compradorType"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => {
+              const value = field.value ?? 'Natural';
+              return (
+                <RadioGroup row defaultChecked value={value} onChange={(e) => { field.onChange(e) }}>
+                  <FormControlLabel value="Natural" control={<Radio />} label="Natural" />
+                  <FormControlLabel value="Juridico" control={<Radio />} label="Jurídico" />
+                </RadioGroup>
+              )
+            }}
+          />
           {/* Payment Value: required, must be positive and ≤ 1,000,000; formatted with commas */}
           <Controller
             name="paymentValue"
@@ -210,6 +221,11 @@ const InternalForm: React.FC = () => {
           />
         </Box>
       </FormSection>
+      <InfoModal
+        open={openDialog}
+        onClose={() => { setOpenDialog(false); setError(false) }}
+        isError={error}
+      />
     </Container>
   );
 };
