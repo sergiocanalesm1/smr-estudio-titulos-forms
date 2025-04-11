@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import { Container, Button, Box, Paper, Typography } from '@mui/material';
 
@@ -17,6 +17,7 @@ import { parseCamelCase } from '../../utils/utils';
 
 const ClientForm: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
 
   const payload = queryParams.get('payload');
@@ -30,7 +31,7 @@ const ClientForm: React.FC = () => {
     token: ''
   });
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +71,7 @@ const ClientForm: React.FC = () => {
       setValue('datosComprador.nombreCliente', params.compradorName);
       setValue('datosComprador.email', params.compradorEmail);
     }
-  }, [params, setValue])
+  }, [params, setValue]);
 
   const [validatedSections, setValidatedSections] = useState<Record<keyof ClientFormState, boolean>>({
     datosComprador: false,
@@ -156,6 +157,11 @@ const ClientForm: React.FC = () => {
     return formData;
   };
 
+  const handleConfirmSubmit = () => {
+    setDialogOpen(false);
+    handleSubmit(onSubmit)();
+  };
+
   const onSubmit = async (data: ClientFormState) => {
     setLoading(true);
     const pdfBlob = generatePDF(data);
@@ -177,12 +183,12 @@ const ClientForm: React.FC = () => {
       const result = await response.json();
       console.log('Submission successful:', result);
       setError(false);
+      navigate('/exito?tipo=cliente');
     } catch (error) {
       console.error('Error submitting form:', error);
       setError(true);
     } finally {
       setLoading(false);
-      setOpenDialog(true);
     }
   };
 
@@ -192,7 +198,13 @@ const ClientForm: React.FC = () => {
 
   return (
     <Container sx={{ py: 2 }}>
-      <Stepper validatedSections={validatedSections} onSubmit={handleSubmit(onSubmit)} loading={loading} />
+      <Stepper
+        validatedSections={validatedSections}
+        onSubmit={() => {
+          setDialogOpen(true);
+        }}
+        loading={loading}
+      />
       <FormProvider {...methods}>
         <Paper elevation={1} sx={{
           p: 4,
@@ -215,14 +227,35 @@ const ClientForm: React.FC = () => {
             - En caso de requerir documentos adicionales tras la revisión inicial, se le notificará vía correo electrónico.
           </Typography>
         </Paper>
-        <Comprador personType={params.compradorType as PersonType} validated={validatedSections.datosComprador} setValidated={(v) => setValidated('datosComprador', v)} />
-        <Inmuebles validated={validatedSections.documentosInmuebles} setValidated={(v) => setValidated('documentosInmuebles', v)} bancoHipoteca={params.bancoHipoteca} />
-        <Vendedor validated={validatedSections.datosVendedor} setValidated={(v) => setValidated('datosVendedor', v)} />
-        <Notaria validated={validatedSections.notaria} setValidated={(v) => setValidated('notaria', v)} />
-        <Pago paymentValue={params.paymentValue!} validated={validatedSections.soportePago} setValidated={(v) => setValidated('soportePago', v)} />
+        <Comprador
+          personType={params.compradorType as PersonType}
+          validated={validatedSections.datosComprador}
+          setValidated={(v) => setValidated('datosComprador', v)}
+        />
+        <Inmuebles
+          validated={validatedSections.documentosInmuebles}
+          setValidated={(v) => setValidated('documentosInmuebles', v)}
+          bancoHipoteca={params.bancoHipoteca}
+        />
+        <Vendedor
+          validated={validatedSections.datosVendedor}
+          setValidated={(v) => setValidated('datosVendedor', v)}
+        />
+        <Notaria
+          validated={validatedSections.notaria}
+          setValidated={(v) => setValidated('notaria', v)}
+        />
+        <Pago
+          paymentValue={params.paymentValue!}
+          validated={validatedSections.soportePago}
+          setValidated={(v) => setValidated('soportePago', v)}
+        />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
           <Button
-            onClick={handleSubmit(onSubmit)}
+            onClick={(e) => {
+              e.preventDefault();
+              setDialogOpen(true);
+            }}
             type="submit"
             variant="contained"
             color="primary"
@@ -233,9 +266,12 @@ const ClientForm: React.FC = () => {
         </Box>
       </FormProvider>
       <InfoModal
-        open={openDialog}
-        onClose={() => { setOpenDialog(false); setError(false); }}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
         isError={error}
+        title="Confirmación"
+        message="¿Está seguro de que desea enviar la información?"
+        onConfirm={handleConfirmSubmit}
       />
     </Container>
   );

@@ -7,11 +7,14 @@ interface CustomDialogProps {
     open: boolean;
     onClose: () => void;
     isError?: boolean;
+    title?: string;
+    message?: string;
+    onConfirm?: () => void;
 }
 
-const InfoModal: React.FC<CustomDialogProps> = ({ open, onClose, isError = false }) => {
-    const title = isError ? "Error" : "Éxito";
-    const message = isError
+const InfoModal: React.FC<CustomDialogProps> = ({ open, onClose, isError = false, title, message, onConfirm }) => {
+    const defaultTitle = isError ? "Error" : "Éxito";
+    const defaultMessage = isError
         ? "Ocurrió un problema al realizar la acción."
         : "La acción se realizó correctamente.";
     const Icon = isError ? ErrorIcon : CheckCircleIcon;
@@ -35,12 +38,17 @@ const InfoModal: React.FC<CustomDialogProps> = ({ open, onClose, isError = false
                 <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
                     <Icon color={isError ? 'error' : 'success'} sx={{ fontSize: 40 }} />
                     <Typography variant="h6" color={isError ? 'error' : 'primary'}>
-                        {title}
+                        {title || defaultTitle}
                     </Typography>
-                    <Typography variant="body1">{message}</Typography>
+                    <Typography variant="body1">{message || defaultMessage}</Typography>
                 </Box>
-                <Box mt={3}>
-                    <Button onClick={onClose} color="primary" variant="contained">
+                <Box mt={3} display="flex" justifyContent="center" gap={2}>
+                    {onConfirm && (
+                        <Button onClick={onConfirm} color="primary" variant="contained">
+                            Confirmar
+                        </Button>
+                    )}
+                    <Button onClick={onClose} color="primary" variant="outlined">
                         Cerrar
                     </Button>
                 </Box>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { TextField, RadioGroup, FormControlLabel, Radio, Box, Container } from '@mui/material';
 import FormSection from '../components/FormSection';
 import DocumentUploader from '../components/DocumentUploader';
@@ -7,6 +8,7 @@ import InfoModal from '../components/InfoModal';
 import { InternalFormInputs } from '../types';
 
 const InternalForm: React.FC = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -27,19 +29,24 @@ const InternalForm: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState(false);
+
+  const handleConfirmSubmit = () => {
+    setDialogOpen(false);
+    handleSubmit(onSubmit)();
+  };
 
   const onSubmit: SubmitHandler<InternalFormInputs> = async (data) => {
     setLoading(true);
 
     // Create FormData and append non-file fields using snake_case keys
     const formData = new FormData();
-    formData.append('case_id', data.caseID);
+    formData.append('case_id', data.caseID.trim());
     formData.append('comprador_name', data.compradorName);
-    formData.append('comprador_email', data.compradorEmail);
+    formData.append('comprador_email', data.compradorEmail.trim());
     formData.append('comprador_type', data.compradorType);
-    formData.append('payment_value', data.paymentValue.replace(/,/g, ''));
+    formData.append('payment_value', data.paymentValue.replace(/,/g, '').trim());
     if (data.bancoHipoteca) {
       formData.append('banco_hipoteca', data.bancoHipoteca);
     }
@@ -68,10 +75,9 @@ const InternalForm: React.FC = () => {
     } catch (error) {
       console.error('Error submitting form:', error);
       setError(true);
-      // Handle error (show error message to user)
     } finally {
       setLoading(false);
-      setOpenDialog(true);
+      navigate('/exito');
     }
   };
 
@@ -85,7 +91,10 @@ const InternalForm: React.FC = () => {
         `}
         submitBtnText="Enviar"
         loading={loading}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setDialogOpen(true);
+        }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
@@ -222,9 +231,12 @@ const InternalForm: React.FC = () => {
         </Box>
       </FormSection>
       <InfoModal
-        open={openDialog}
-        onClose={() => { setOpenDialog(false); setError(false) }}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
         isError={error}
+        title="Confirmación"
+        message="¿Está seguro de que desea enviar el formulario?"
+        onConfirm={handleConfirmSubmit}
       />
     </Container>
   );
