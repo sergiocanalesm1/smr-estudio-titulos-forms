@@ -8,7 +8,10 @@ const datosDefaults = {
 export const datosCompradorFormDefaults: Partial<DatosCompradorForm> = {
   ...datosDefaults,
   nombreCliente: '',
-  identificacion: '',
+  identificacion: {
+    tipo: 'CC',
+    numero: ''
+  },
   direccion: '',
   email: '',
   tel: '',

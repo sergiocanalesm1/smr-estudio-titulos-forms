@@ -22,7 +22,10 @@ export type InmueblesForm = {
 export type DatosCompradorForm = Datos & (DatosNatural | DatosJuridico) & {
     nombreCliente: string;
     email: string;
-    identificacion: string;
+    identificacion: {
+        tipo: string;
+        numero: string;
+    };
     direccion: string;
     tel: string;
     ciudad: string,

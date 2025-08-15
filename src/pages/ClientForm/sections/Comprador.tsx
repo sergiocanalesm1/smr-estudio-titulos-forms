@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Box, FormControlLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { Box, FormControlLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from '@mui/material';
 import { DatosCompradorForm, DatosJuridico, DatosNatural, PersonType } from '../../../types';
 import FormSection from '../../../components/FormSection';
 import DocumentUploader from '../../../components/DocumentUploader';
@@ -93,6 +93,34 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
         </>
     )
 
+    const IdBox: React.FC = () => (
+        <Box sx={{ display: 'flex', gap: 2 }}>
+            <Controller
+                name="datosComprador.identificacion.tipo"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Select
+                        value={field.value}
+                        onChange={(e) => field.onChange(e)}
+                        sx={{ flex: '0 1 min-content' }}
+                    >
+                        <MenuItem value='CC'>CC</MenuItem>
+                        <MenuItem value='NIT'>NIT</MenuItem>
+                        <MenuItem value='Pasaporte'>Pasaporte</MenuItem>
+                    </Select>
+                )}
+            />
+            <TextField
+                label="Identificación"
+                {...register('datosComprador.identificacion.numero', { required: true })}
+                error={!!e?.identificacion?.numero}
+                variant="outlined"
+                sx={{ flex: '1 1 auto' }}
+            />
+        </Box>
+    );
+
     return (
         <FormSection
             title={sectionNames.datosComprador}
@@ -121,12 +149,7 @@ const Comprador: React.FC<CompradorProps> = ({ validated, setValidated, personTy
                         }
                     }}
                 />
-                <TextField
-                    label="Identificación (NIT o CC)"
-                    {...register('datosComprador.identificacion', { required: true })}
-                    error={!!e?.identificacion}
-                    variant="outlined"
-                />
+                <IdBox />
                 <TextField
                     label="Dirección"
                     {...register('datosComprador.direccion', { required: true })}
